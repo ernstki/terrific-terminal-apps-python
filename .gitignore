@@ -1,5 +1,7 @@
 .*sw?
 *~
+modd.conf
 .DS_Store
 sweethome.html
+__pycache__/
 tttapy/
