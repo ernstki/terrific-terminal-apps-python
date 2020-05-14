@@ -388,7 +388,7 @@ name: nextlevel
 name: demo
 ## Practical demo
 
-[`pmf`](pmf.py): fetch headlines of research papers from
+[`pmf`](pmf): fetch headlines of research papers from
 <abbr title="National Center for Biotechnology Information">NCBI</abbr>
 [PubMed][pm].
 
