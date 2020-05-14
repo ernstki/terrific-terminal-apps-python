@@ -9,7 +9,7 @@ class: center, middle
 <!--small>"User-friendly" and "command line application"<br>
 aren't necessarily mutually exclusive.</small-->
 
-<small>[bit.ly/tttapy](https://bit.ly/tttapy)<br>[bit.ly/tttapy-code](https://bit.ly/tttapy-code)</small>
+<small>[bit.ly/tttapy](https://bit.ly/tttapy) &bull; [bit.ly/tttapyc](https://bit.ly/tttapyc)</small>
 
 .footnote[
 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />
