@@ -508,6 +508,7 @@ which will load up every time you run PowerShell.
 
 * [UNIX: Making Computers Easier To Use](https://www.youtube.com/watch?v=XvDZLjaCJuw) — AT&T Archives film from 1982, Bell Laboratories
     * see [this gist](https://gist.github.com/ernstki/1432b3ea843410a4826ce9cb1584d7b5) for a step-by-step recreation of the spellchecker and talking calculator in Bash and Python
+* [The Unix Chainsaw][3] by Gary Bernhardt
 * PyCon UK 2012: [Create *beautiful* command-line interfaces with Python][1] (by the author of [docopt][2])
 * [jlevy/the-art-of-command-line](https://github.com/jlevy/the-art-of-command-line)
 * Internet your pipes and pipe the Internet with [`curl`](https://curl.haxx.se)
@@ -515,6 +516,7 @@ which will load up every time you run PowerShell.
 
 [1]: https://www.youtube.com/watch?v=pXhcPJK5cMc
 [2]: https://github.com/docopt/docopt
+[3]: https://www.youtube.com/watch?v=sCZJblyT_XM
 
 ---
 # .rainbow[BONUS ROUND!]
