@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Home Sweet $HOME</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Saira+Semi+Condensed:400,700);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body {
+        font-family: 'Saira Semi Condensed';
+      }
+      body p, body li {
+        font-size: 1.5em;
+        line-height: 110%;
+      }
+      body li {
+        font-size: 1.3em;
+        line-height: 105%;
+        padding-bottom: 0.5em;
+      }
+      pre + ul {
+        padding-top: 1em;
+      }
+      h1, h2, h3 {
+        font-family: 'Saira Semi Condensed';
+        font-weight: bold;
+        line-height: 110%;
+      }
+      .remark-code, .remark-inline-code {
+        font-size: 1.1em;
+        font-family: 'Ubuntu Mono';
+      }
+      .footnote {
+        position: absolute;
+        bottom: 2em;
+      }
+      .footnote p {
+        font-size: 1.3em;
+        padding-right: 3em;
+      }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle
+
+# Purpose-built Programming Languages in Unix
+
+<small>_or_, the mini-programming languages right under your nose</small>
+
+<small><http://FIXME></small>
+
+---
+## The Unix "Shell"
+
+it's a text-based interface to the Unix operating system
+<!-- -->
+
+    
+which means you _type in_ commands to examine your files, copy, move, or
+otherwise manipulate their contents
+<!-- -->
+
+    
+it's also a built-in programming language with a "[read-eval-print loop](https://en.m.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop)"
+<!-- -->
+
+
+...which means you can enter in programs one line at a time and see the
+execution results immediately
+
+.footnote[
+**See also:** <a href="https://asciinema.org/a/205982?autoplay=1" target="_blank">
+brief "shell as a REPL" demo</a> (asciinema.org, in a new tab)
+]
+
+---
+### The Unix "Shell" (cont'd)
+
+buuuuuuut... because the shell is actually a general-purpose programming
+language,
+
+and since this presentation isn't really about _general-purpose_ programming with the shell,
+
+we'll table that full discussion for a later date.
+
+.footnote[
+**But if you're interested, start here:**<br>[Bash Guide for Beginners](http://tldp.org/LDP/Bash-Beginners-Guide/html/index.html);
+[The Art of Command Line](https://github.com/jlevy/the-art-of-command-line)
+]
+
+---
+## "Purpose-built"?
+
+some "programming languages" are specially designed for one thing
+
+* pattern matching (wildcards, [regular expressions](https://man.cx/regex(7))
+* manipulating "streams" of text ([`sed`](https://man.cx/sed))
+* working with column-based (delimited) data files ([`awk`](https://man.cx/awk))
+* doing math ([`bc`](https://man.cx/bc) and `dc`)
+    
+<small>...that is, they may lack features necessary to solve _any_ general
+purpose computational problem, such as loops, conditionals, or
+functions (composability and modularity)</small>
+
+---
+## Shell wildcards (_a.k.a._, "globs")
+
+Used to "filter" file listings by only showing matching files
+<!-- -->
+
+
+"`*`" (asterisk) means "zero or more of any character"
+<!-- -->
+
+```bash
+# list all files ending in '*.fastq.gz'
+ls *.fastq.gz
+```
+<!-- -->
+
+"`?`" means "exactly one character, but which one, I don't care"
+<!-- -->
+
+```bash
+# list files that end in '.ba' folled by any single character
+# (e.g., '.bat' or '.bak')
+ls *.ba?
+```
+<!-- -->
+
+(and obviously you can combine them)
+
+
+---
+### Globs (cont'd)
+
+square brackets denote a "character class"
+<!-- -->
+ (that is, match any **one** character in this set)
+<!-- -->
+
+```bash
+# list all files beginning with either upper- or lower-case 'C'
+ls [Cc]*
+```
+<!-- -->
+
+and these can be combined with other wildcards
+<!-- -->
+
+```bash
+# list all files with .tar.gz or .tar.bz2 extensions
+ls *.[bg]z*
+```
+<!-- -->
+
+(remember that the asterisk here means "zero or more of any character")
+
+---
+### Globs (cont'd)
+
+ranges of characters are also supported
+<!-- -->
+
+```bash
+# list all files beginning with a letter
+ls [a-zA-Z]*
+```
+<!-- -->
+
+```bash
+# all files ending with a three-digit extension
+ls *.[0-9][0-9][0-9]
+```
+<!-- -->
+
+as are "inverse" sets
+<!-- -->
+
+```bash
+# list all files that do *NOT* begin with a letter
+ls [^a-zA-Z]*
+```
+
+---
+## Shell math
+
+you can do inline math with `$(( expr ))`
+<!-- -->
+
+```bash
+echo "Ceci n'est pas une équation: $(( 2 + 2 ))"
+
+# result: Ceci n'est pas une équation: 4
+```
+<!-- -->
+
+see the complete list of supported operators
+[here](https://www.gnu.org/software/bash/manual/html_node/Shell-Arithmetic.html#Shell-Arithmetic)
+<!-- -->
+
+.footnote[
+**NB**: the Bash shell actually has several such "[shell
+expansions](https://www.gnu.org/software/bash/manual/html_node/Shell-Expansions.html#Shell-Expansions),"
+including [command
+substitution](https://www.gnu.org/software/bash/manual/html_node/Command-Substitution.html#Command-Substitution)
+(_a.k.a._, backticks)
+]
+
+---
+### Shell math (cont'd)
+
+...and you can store the value of arithmetic expressions in variables
+<!-- -->
+
+```bash
+i=1027
+
+# the '/' does "integer division" (floors the result)
+quotient=$(( i / 8 ))
+
+# the '$' is not required inside arithmetic expansions
+remainder=$(( i % 8 ))
+
+echo "$i / 8 = $quotient R$remainder"
+# result: 1027 / 8 = 128 R3
+```
+
+---
+### Shell math (cont'd)
+
+also, just FYI, there are also these special cases for `for` loops
+<!-- -->
+
+```bash
+for (( i=0; i<10; i++ )); do
+    echo "$i is not yet 10!"
+done
+```
+<!-- -->
+
+...and `while` loops, as well conditional expressions, as seen below
+
+```bash
+beer=99; s='s'
+
+while (( beer )); do
+    echo "$beer bottle${s} of beer on the wall"
+    beer=$(( beer - 1 ))
+    # set variable 's' to the empty string when 'beer' equals 1
+    (( beer == 1 )) && s=
+done
+```
+
+---
+### Still more shell math
+
+for more complicated operations (including floating point math), you can rely
+on [`bc`](https://man.cx/bc)
+
+```bash
+# simple shell calculator (quotes not *technically* required here)
+echo "5/3" | bc
+
+# or, using a Bash feature called a "here string"
+bc <<<"5/3"
+
+# result: 1.66666666666666666666
+```
+<!-- -->
+
+and you can use [command substitution](https://www.gnu.org/software/bash/manual/html_node/Command-Substitution.html#Command-Substitution)
+here, too
+
+```bash
+echo "The value of π ≈ $( bc <<< "scale=6; 22 / 7" )"
+
+# result: The value of π ≈ 3.142857
+```
+
+---
+## Brace expansion
+
+expands all members of a "set" one at a time, delimited by spaces
+
+```bash
+echo {Th,h,th,th,c}at had
+
+# result: That hat that that cat had
+```
+
+<!-- -->
+
+print a list of all trimers
+
+```bash
+echo {a,c,t,g}{a,c,t,g}{a,c,t,g}
+
+# result: aaa aac aat aag aca acc act acg ata atc att [...]
+```
+<!-- -->
+
+.footnote[
+**NB**: The first example exploits [word splitting](http://mywiki.wooledge.org/WordSplitting);
+this would _not_ work if the whole string were quoted.
+]
+
+---
+## Pipes, man
+
+<!-- -->
+they're _so good_
+
+```bash
+# random 32-character alphanumeric string
+cat /dev/urandom       |
+    tr -dc 'a-zA-Z0-9' |
+    fold -w 32         |
+    head -1
+
+# result: tMhc9feAGgg8NS1MUu10dzNbEBf9Tdjk
+```
+
+* `/dev/urandom` - "device special file" that spews random bytes
+* `tr` - translates or deletes sets of characters
+* `fold` - wraps all lines at 32 characters
+* `head` returns just the first line of the input
+
+---
+### Pipes (cont'd)
+    
+OK, so how do I capture that in a variable so I can do something
+useful with it?
+
+easy: [command substitution](https://www.gnu.org/software/bash/manual/html_node/Command-Substitution.html#Command-Substitution)
+<!-- -->
+
+```bash
+# capture the random string in a shell variable
+ID=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -1)
+```
+
+then, just use that variable `$ID` somewhere else.
+
+<!-- -->
+.footnote[
+**See also:**
+[The Unix Chainsaw](https://www.youtube.com/watch?v=sCZJblyT_XM) 
+(~20 min); [this GitHub gist](https://gist.github.com/earthgecko/3089509>)
+]
+
+---
+## Regular Expressions
+
+tune in next time for a whirlwind tour of
+
+* [`grep`](https://man.cx/grep) - the "global regular expression printer"
+* [`sed`](https://man.cx/sed) - the "stream editor"
+* [`awk`](https://man.cx/awk) - funny name, serious programming language
+* [`perl`](https://man.cx/perlrun) - the pathologically eclectic rubbish
+    lister<br>(useful one-liners anyway)
+* and (yay!) [regular expressions][regex7]!
+
+
+.footnote[
+**See also:**
+The "[regular expression](https://en.wikipedia.org/wiki/Regular_expression)" article on Wikipedia
+]
+
+[regex7]: https://man.cx/regex(7)
+---
+## Next episode: `sed`
+
+this actual `sed` program merges consecutive lines under "Term" headers
+in the [BRENDA tissue ontology](https://www.brenda-enzymes.info/ontology/tissue/tree/update/update_files/BrendaTissueOBO)
+
+```sed
+/^\[Term/!b  # branch to end if the line doesn't start w/ "[Term"
+n            # read the next line of input
+:a           # label 'a'
+H            # append the current line to the hold space
+n            # get the next line
+/^$/!ba      # if line is NOT empty, branch to 'a'
+x            # otherwise, exchange the hold space w/ pattern space
+s/^\n//      # remove the leading newline
+s/\n/\t/g    # replace all the remaining ones with tabs
+p            # print what we got (remember to run script w/ '-n')
+```
+<!-- -->
+
+<small>(the English comments off to the right are for _me_, so can still
+I understand what the heck all this does a year from now)</small>
+
+---
+## Next episode: AWK
+
+print the username (`$1`) and full name (`$5`) of all the Smiths
+
+```bash
+getent passwd | awk -F: '$5 ~ /^[Ss]mith/ { print $1 " - " $5 }'
+
+# result:
+# baue5r - Smith, Laura
+# mer7am - Smith, Roberta
+# smiar8 - Smith, Shane
+```
+<!-- -->
+
+count how many Ernsts have cluster accounts
+
+```bash
+getent passwd |
+    awk -F: '$5 ~ /^[Ee]rnst/ { count++ }; END { print count }'
+```
+<!-- -->
+
+.footnote[
+**See also:** [this blog post](http://FIXME)
+(by Kevin) about AWK and Bioawk
+]
+
+---
+class: center, middle
+    
+# THANKS
+
+for your kind attention!
+
+.footnote[
+these slides are available at<br><FIXME>
+]
+
+---
+class: center, middle
+
+<small>here's a cute kitten</small>
+
+![a cute kitten](img/kitten.jpg)
+
+    </textarea>
+    <script src="https://remarkjs.com/downloads/remark-latest.min.js">
+    </script>
+    <script>
+      var slideshow = remark.create();
+    </script>
+  </body>
+</html>
+<!-- vim: ft=markdown
+-->

@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Unix Shell Programming</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Saira+Semi+Condensed:400,700);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body {
+        font-family: 'Saira Semi Condensed';
+        font-size: 2rem;
+      }
+      /* keycaps style for keyboard shortcuts */
+      kbd {
+        display: inline-block;
+        font-size: 0.8em;
+        background-color: #F9F9F9;
+        border: 2px solid #ccc;
+        border-radius: 5px;
+        line-height: 1em;
+        padding: 0.2em 0.3em 0.1em;
+        box-shadow: 0 3px #aaa;
+        vertical-align: baseline;
+      }
+      p {
+        font-size: 1.5em;
+        line-height: 110%;
+      }
+      li {
+        font-size: 1.8rem;
+        line-height: 110%;
+        padding-bottom: 0.3em;
+      }
+      li pre {
+        margin: 0.5em 0;
+      }
+      li pre + ul {
+        padding-top: 0;
+      }
+
+      li ul {
+        padding-top: 0.3em;
+      }
+      li code.remark-code {
+        font-size: 0.8em;
+      }
+      li ul li {
+        font-size: 0.8em;
+      }
+
+      li blockquote {
+        margin:0;
+        font-size: 0.9rem;
+        padding-left: 1em;
+        border-left: 3px solid #ccc;
+        color: #333;
+      }
+
+      li ul li:last-of-type {
+        padding-bottom: 0.2em;
+      }
+      pre + ul {
+        padding-top: 1em;
+      }
+      h1, h2, h3 {
+        font-family: 'Saira Semi Condensed';
+        font-weight: bold;
+        line-height: 110%;
+      }
+      .remark-code, .remark-inline-code {
+        font-size: 1.1em;
+        font-family: 'Ubuntu Mono';
+      }
+      .img-float-right img {
+        float:right;
+        margin-left: 2em;
+        max-height: 16em;
+      }
+      .img-center img {
+        max-width: 200px;
+        margin: 1em auto;
+      }
+        
+      .img-5em img {
+        max-height: 5em;
+      }
+      .muted {
+        color: #ccc;
+      }
+      .struck {
+        color: #aaa;
+        text-decoration: line-through;
+      }
+      .footnote {
+        position:fixed;
+        bottom: 2em;
+        margin-right:4em;
+      }
+      .center .footnote {
+        left:50%;
+        transform: translate(-50%, 0);
+      }
+      .footnote p {
+        font-size: 1em;
+        line-height:100%;
+        margin:0.3em 0;
+      }
+      a {
+        color: #399;
+        text-decoration: none;
+      }
+      a, a:visited {
+        /*color: rgb(0, 0, 238);*/
+      }
+      a:hover {
+        /*color: rgb(80, 80, 238);*/
+        color: #3cc;
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle
+
+# Bash survival guide
+
+<small>&mdash; _or_ &mdash;<br>"if you're stuck in the Unix shell<br>at least you can _pretend_ everything is OK"</small>
+
+<small><FIXME></small>
+
+.footnote[
+(all footnote links in these slides will open in a new tab)
+]
+
+---
+## the Unix "shell"
+
+is a text-based interface to a Unix operating system
+
+the cool kids use [`zsh`](http://zsh.sourceforge.net/), and your PI probably
+uses [`csh`](https://en.wikipedia.org/wiki/C_shell)
+
+but the default one is `bash`, the "Bourne Again Shell"
+
+```bash
+echo $SHELL
+# result: /bin/bash
+```
+
+and it is fine and good
+
+so we will talk about Bash
+
+---
+## the Unix "shell" (cont'd)
+
+did you know…
+
+it's also a built-in programming language with a "[read-eval-print loop](https://en.m.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop)"
+
+…which means you can enter in programs one line at a time and see the
+execution results immediately
+
+<small>(users of Mathematica, MATLAB, or RStudio will find this familiar)</small>
+
+but there are also some arcane behaviors (it's a [50-year-old OS](https://en.wikipedia.org/wiki/History_of_Unix), after all) and dark corners you could get stuck in
+
+.footnote[
+**see also:** <a href="https://asciinema.org/a/205982?autoplay=1" target="_blank">
+brief "shell as a REPL" demo</a> (asciinema.org)
+]
+
+---
+class: center, middle
+
+![shiba inu gets stuck in bush](img/shiba_inu.jpg)
+
+---
+class: center, middle
+
+![shiba inu gets stuck in Brsh](img/shiba_inu_stuck_in_bash.jpg)
+
+
+---
+## so, complexity
+
+the Unix shell is a complex and powerful system, with a sometimes-daunting user
+interface
+
+and humans, rightfully (!), have an atavistic fear of powerful things
+
+---
+class: center, middle
+
+## chainsaws
+
+powerful things evoke fear
+
+![a chainsaw](img/chainsaw1.jpg)
+
+.footnote[
+**hat tip:** "<a href="https://www.youtube.com/watch?v=sCZJblyT_XM&t=102" target="_blank">The Unix Chainsaw</a>"
+<br>(a 2011 conference talk by <a href="https://www.destroyallsoftware.com/talks" target="_blank">Gary Bernhardt</a>)
+]
+
+---
+class: img-float-right
+
+![Chainsaw Carving by Paul](http://www.chainsawcarvingbypaul.com/s/cc_images/cache_900065363.jpg)
+
+## chainsaws (cont'd)
+
+…but that power can be harnessed productively in the hands of an expert<span style="color:red">\*</span>
+
+…and anyone<span style="color:red">\*\*</span> can become an expert with practice and dedication
+
+.footnote[
+<span style="color:red">*</span><a href="http://www.chainsawcarvingbypaul.com/eagles/" target="_blank">Chainsaw Carving by Paul</a>
+
+<span style="color:red">\*\*</span>let's be conservative and say "<em>almost</em> anyone"
+]
+
+---
+## &ldquo;proficiency fatalism&rdquo;<span style="color:red">\*</span>
+
+don't succumb to it
+
+we have a tendency to see an expert at their craft and say, &ldquo;oh, I could never do that,&rdquo; but…
+
+* [it is a fallacy](https://en.wikipedia.org/wiki/End-of-history_illusion) to think you cannot master new skills
+* every expert was a novice at first
+* [pair-programming](https://en.wikipedia.org/wiki/Pair_programming) is a great way to level up
+
+.footnote[
+<span style="color:red">\*</span> taken from the "[Unsolicited Advice](https://www.youtube.com/watch?v=sCZJblyT_XM&t=1244)" section of Gary Bernhardt's talk
+]
+
+---
+## avoid the &ldquo;Tar Pit of Immediacy&rdquo;<span style="color:red">\*</span>
+
+if you can, instead:
+
+* slow down; read the documentation to gain understanding
+    * rather than simply copy-pasting from Stack Overflow
+* comment your code
+* modularize<span style="color:red">\*\*</span>
+* envision a long-lived, well-documented, and reusable solution
+
+a well-thought-out solution often wins over a quick-and-dirty one (amortized over the life of a project)
+
+.footnote[
+<span style="color:red">\*</span> taken from the "[Unsolicited Advice](https://www.youtube.com/watch?v=sCZJblyT_XM&t=1244)" section of Gary Bernhardt's talk
+
+<span style="color:red">\*\*</span><a href="https://github.com/erichs/composure" target="_blank">composure</a> &ndash; transform one-liners into a reusable, composable script library
+]
+
+---
+class: center, middle
+
+# now, onward
+
+```html
+</philsophizing>
+```
+
+---
+## tips for survival &ndash; the shell
+
+* put this in your `~/.bashrc` right now
+      ```bash
+      alias rm='rm -i'
+      alias mv='mv -i'
+      alias cp='cp -i'
+      alias ln='ln -i'
+      ```
+    * use `\rm` or `rm -f` if you _don't_ want to be prompted
+* set `$EDITOR` and `$VISUAL` to an editor you understand
+      ```bash
+      # also in ~/.bashrc
+      export EDITOR='nano' VISUAL='nano'
+      ```
+* that said, do [`vimtutor`](http://vimdoc.sourceforge.net/htmldoc/usr_01.html#vimtutor)
+    * seriously, learn enough `vi` to be dangerous
+
+---
+## tips for survival &ndash; the shell (cont'd)
+
+* mind your line endings: [required reading](https://en.wikipedia.org/wiki/Newline)
+    * _<abbr title="Too Long; Didn't Read">tl;dr</abbr> version: use `dos2unix FILENAME`_
+* Unix text files are **linefeed-terminated** (ASCII `LF`, `\x0a`)
+   * files missing a final terminating LF won't parse correctly
+   * files with CR+LF (DOS/Windows) line endings won't either
+
+now, do this experiment
+* create a text file using Windows Notepad
+* save it or email it to a Unix machine (macOS is Unix)
+* run `file`, then `cat -A` (`-vte` on Mac) on the file
+* then, convert with `dos2unix` and compare
+    * see also: `man 7 ascii`
+
+---
+## tips for survival &ndash; the shell (cont'd)
+
+* preemptively scan through the [Bash FAQ](https://mywiki.wooledge.org/BashFAQ) and [Pitfalls](Bash Pitfalls)
+    * fix your own [antipatterns](https://www.martinfowler.com/bliki/AntiPattern.html)
+* always [quote your variables](http://mywiki.wooledge.org/Quotes)
+* understand [word splitting](https://mywiki.wooledge.org/WordSplitting)
+* don't parse the output of `ls` [[ref](https://mywiki.wooledge.org/ParsingLs)]
+    * instead, use something like `for csv in *.csv; do …`<br>
+      (and always quote your iterator variable)
+    * use `find -exec` for more complicated cases
+* understand what the "secondary prompt string" (`$PS2`) means
+* learn to use [job control](https://www.gnu.org/software/bash/manual/html_node/Job-Control-Basics.html) and [signals](https://www.gnu.org/software/bash/manual/html_node/Signals.html)
+    * `kill -9` is a blunt instrument
+
+---
+## tips for survival &ndash; WTF!?
+
+programs can appear to be frozen that are actually fine
+
+* did you forget to specify the input filename?
+    * "Unix toolkit" programs expect input on stdin
+    * if you don't give them an input file, they will wait for input from the
+      keyboard
+    * <kbd>Ctrl</kbd>+<kbd>D</kbd> signals "end of input" (mnemonic: "D" is for "done")
+* did you accidentally press <kbd>Ctrl</kbd>+<kbd>S</kbd>?
+  [[ref](https://en.wikipedia.org/wiki/Software_flow_control)]
+    * try pressing <kbd>Ctrl</kbd>+<kbd>Q</kbd> (resume flow control)
+        * on Windows, <kbd>Ctrl</kbd>+<kbd>S</kbd> is probably in your muscle
+          memory as "Save"
+        * in the Unix terminal, it means **stop flow control** (pause terminal output)
+        * and this use probably predates "File → Save" by some decades
+<!--        * on this one point, Mac keyboards are less aggravating, because -->
+<!--          application shortcuts are typically bound to <kbd>⌘Command</kdb> -->
+
+---
+## tips for survival &ndash; job control
+
+okay, this program is _really_ locked up, for real
+
+* if it's _really_ not responding, <kbd>Ctrl</kbd>+<kbd>C</kbd>
+    * then <kbd>Ctrl</kbd>+<kbd>Z</kbd> (suspend), followed by `kill %1`
+    * then `kill -HUP`, then `kill -QUIT`
+    * and as an absolute **last resort**: `kill -9`
+* if the InterWebs suggests `kill -9`, be skeptical
+    * `kill -9` doesn't give the program a chance to clean up after itself
+      (close open files, flush buffers, close network sockets)
+    * it's almost never necessary, except when there's some blocking (network)
+      I/O, or a hardware failure
+    * programs that are trying desperately to flush unwritten data buffers to
+      disk really don't want to be killed in the middle of that
+
+---
+## tips for survival &ndash; the terminal
+
+accidentally `cat`ted a binary, now the terminal's messed up?
+
+* try `reset`, first, and if that doesn't work…
+* `stty sane` &ndash; resets the terminal's brains
+
+don't just hold down the arrow keys (or backspace)
+
+* <kbd>Ctrl</kbd>+<kbd>A</kbd> / <kbd>Ctrl</kbd>+<kbd>E</kbd> - move to beginning / end of line
+    * handy if <kbd>Home</kbd> / <kbd>End</kbd> are in a bad position on your
+      (laptop) keyboard
+* <kbd>Ctrl</kbd>+<kbd>U</kbd> / <kbd>Ctrl</kbd>+<kbd>K</kbd>
+    * delete from cursor position to beginning / end of line
+    * <kbd>Ctrl</kbd>+<kbd>U</kbd> is great for clearing a mistake in
+      a <tt>Password:</tt> prompt
+* or just `set -o vi` if you're of the `vi` persuasion
+
+---
+## tips for survival &ndash; scripting
+
+<small>5 extra minutes spent documenting it now could spare 5 hours of
+frustrated head-scratching later… do it for future-you</small>
+
+* **always** add a comment header, even for one-offs
+    * a good name and a clear description, your name, email, and a date
+* always cite your sources
+    * _e.g._, include a link to the [SO](https://stackoverflow.com) thread that solved your problem
+* `set -u` &ndash; terminate on unset variables
+* always [quote your variables](http://mywiki.wooledge.org/Quotes)
+* use `${infile:?filename required!}` for cheap argument validation
+    * in fact, learn all about [parameter substitution](https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html)
+* do not ignore the exit code of subprocesses (`$?`)
+
+
+---
+class: center
+background-image: url(img/scripts_are_vampires.jpg)
+
+.footnote[
+someone _will_ inherit your one-off script someday
+]
+
+---
+## tips for survival &ndash; scripting (cont'd)
+
+shell scripting for data processing tasks:
+
+* you _can_ do it in Awk or sed (for most definitions of "it")
+    * …probably with less code than R, Python, or your favorite language
+    * build proficiency over time with small challenges
+        * could I solve _this_ problem with Awk? sed?
+* shell script is an ideal "glue language"
+    * classic Unix toolkit programs generally do "[one thing well](https://en.wikipedia.org/wiki/Unix_philosophy#Doug_McIlroy_on_Unix_programming)" and exchange data via text streams
+    * if you design your programs to do the same, **you can extend that toolkit in novel ways**
+* or, maybe, just **don't use shell script**
+    * if a specific thing is easier in some other language, then do that
+        * unless you're trying to hone your shell-scripting skills, that is
+
+---
+## tips for proficiency and mastery
+
+* use your command-line history [more effectively](https://sanctum.geek.nz/arabesque/better-bash-history/)
+    * learn about [`fc`](https://shapeshed.com/unix-fc/), use
+      <kbd>Ctrl</kbd>+<kbd>R</kbd>, customize your
+      [`.inputrc`](https://gist.github.com/ernstki/4f370ada5e9ba02a57799ad88b3e855f#file-dot-inputrc)
+* use more loops, wildcards, and [parameter substitution](https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html)
+    * this is easily 10&times; less code than your regular programming language
+        ```bash
+        for bam in *.bam; do
+            samtools fastq "$bam" > "${bam%.bam}.fastq"
+        done
+        ```
+* use [more pipes](https://youtu.be/sCZJblyT_XM?t=833)!
+* write shell functions to [encapsulate complexity](https://github.com/erichs/composure)
+* use [command](https://www.gnu.org/software/bash/manual/html_node/Command-Substitution.html) and [process substitution](https://www.gnu.org/software/bash/manual/html_node/Process-Substitution.html)
+* _really_ learn shell [pattern matching](https://www.gnu.org/software/bash/manual/html_node/Pattern-Matching.html) and [regexes](https://perldoc.perl.org/perlre.html) ([workshop](FIXME))
+
+---
+## tips for .struck[proficiency and mastery] life
+
+* don't be afraid to experiment
+    * you (probably) won't break it
+* constructive failures are a kind of success
+    * what's the difference between the student and the master?
+        * simply that the master has failed more times than the student has tried
+* breathe, slow down, take a short walk
+    * you'll figure it out eventually <tt>:)</tt>
+* **don't be afraid to ask a human**
+    * the robot overlords don't have _all_ the answers (yet)
+    * Stack Overflow is cool, though
+
+---
+class: center, middle
+# now, specifics
+
+---
+
+## use [loops](https://www.gnu.org/software/bash/manual/html_node/Looping-Constructs.html)
+
+you don't need to parse the output of `ls` ([so don't](https://mywiki.wooledge.org/ParsingLs))
+
+```bash
+for fastq in *.fastq; do
+    shasum -a 1 "$fastq" >> SHA1SUMS
+done
+```
+
+(use `find -exec` for more complicated cases<span style="color:red">*</span>)
+
+also, just FYI, "C style" `for` loops are supported in Bash
+
+```bash
+for (( i=0; i<10; i++ )); do
+    echo "$i is not yet 10!"
+done
+```
+
+.footnote[
+<span style="color:red">*</span>or put some time into learning <a href="https://www.youtube.com/playlist?list=PL284C9FF2488BC6D1" target="_blank">GNU Parallel</a> 
+]
+
+---
+## use [loops](https://www.gnu.org/software/bash/manual/html_node/Looping-Constructs.html) (cont'd)
+
+Bash `while` loops can use normal conditional expressions in `[[ … ]]`, as well
+as math expressions in `(( … ))`
+
+```bash
+beer=99; s='s'
+
+while (( beer )); do
+    echo "$beer bottle${s} of beer on the wall"
+    beer=$(( beer - 1 ))
+    # set variable 's' to the empty string when 'beer' equals 1
+    (( beer == 1 )) && s=
+done
+```
+
+* they're basically built-in commands that return "true" (zero exit) or
+ "false" (non-zero exit) based on what's inside
+    * in the case of `(( … ))`, if the math expression produces a non-zero
+      numeric result, that counts as "true"; zero or empty/null is "false"
+
+---
+## don't throw away return values
+
+_any_ command that returns non-zero on failure **can be used as
+the condition** in loops, conditionals, and [short-circuit Boolean](https://en.wikipedia.org/wiki/Short-circuit_evaluation) expressions
+
+
+```bash
+# '&>/dev/null' suppresses both stderr and stdout
+while ping -c1 google.com &>/dev/null; do
+    echo "The googles are still googling."
+    sleep 3600  # for an hour
+done
+```
+
+```bash
+if grep -q 'FAILURE' "$logfile"; then
+    echo "OH NOES. IT HAS FAILED. :(" >&2
+fi
+```
+
+```bash
+# '||' is Boolean OR; the operator for AND is '&&'
+[[ $n =~ /^[1-9][0-9]+$/ ]] || echo "Expected an integer ≥1."
+```
+
+---
+## use [command substitution](https://www.gnu.org/software/bash/manual/html_node/Command-Substitution.html) 
+
+did you know? [`bc`](https://man.cx/bc) does floating point math in the shell
+
+```bash
+# simple shell calculator
+# quotes not technically required here, just get in the habit
+echo '5/3' | bc
+
+# or, using a Bash feature called a "here string"
+bc <<<'5/3'
+
+# result: 1.66666666666666666666
+```
+
+command substitution captures a command's output<br>
+**as a string**, and automatically trims the final newline
+
+```bash
+echo "The value of π ≈ $( bc <<< "scale=6; 22 / 7" )"
+
+# result: The value of π ≈ 3.142857
+```
+
+---
+## use [process substitution](https://www.gnu.org/software/bash/manual/html_node/Process-Substitution.html)
+
+process substitution captures a command's output<br>
+**as a (temporary) file**, which is automatically removed
+
+```bash
+# join files on the 1st column after sorting numerically
+# (without creating intermediate files)
+join <(sort -k1,1n file1) <(sort -k1,1n file2)
+```
+
+imagine wherever you see `<( … )` that it's being replaced by the filename of
+the temporary file
+
+<small>(because under the hood, it is, with a funny name like `/dev/fd/63`)</small>
+
+---
+## use [process substitution](https://www.gnu.org/software/bash/manual/html_node/Process-Substitution.html) (cont'd)
+
+if you pipe input into a loop, like `cmd | while read …`
+* the pipe invokes a subshell—that's what pipes do
+* but subshells **can't alter the state of the parent shell**
+    * _i.e._, create or update variables in the parent environment
+* process substitution is useful in this scenario
+    * [BashFAQ/024](https://mywiki.wooledge.org/BashFAQ/024) explains this in
+detail<span style="color:red">\*</span>
+
+```bash
+# shell redirection creates no subshell, so this DOES work
+count=0
+while read group; do count=$((count+1)); done \
+  < <(id | sed 's/.*groups=//' | tr , \\n)
+
+echo "My user account is a member of $count groups!"
+```
+
+.footnote[
+<span style="color:red">\*</span>**see also**: <a href="https://mywiki.wooledge.org/ProcessSubstitution" target="_blank">Process Substitution</a> on <a href="https://mywiki.wooledge.org/EnglishFrontPage" target="_blank">Greg's Wiki</a>, a top-notch resource for Bash scripting
+]
+
+---
+## use [brace expansion](https://www.gnu.org/software/bash/manual/html_node/Brace-Expansion.html), like a boss
+
+expands all members of a "set" one at a time, delimited by spaces; when
+concatenated, the expansions are expanded
+
+```bash
+echo {Th,h,th,th,c}at had
+
+# result: That hat that that cat had
+```
+
+```bash
+# move *.bam and *.bai to some other directory
+mv *.ba{m,i} some/other/dir
+```
+
+```bash
+# print a list of all trimers
+echo {a,c,t,g}{a,c,t,g}{a,c,t,g}
+
+# result: aaa aac aat aag aca acc act acg ata atc att [...]
+```
+
+.footnote[
+**NB**: The first example exploits <a href="http://mywiki.wooledge.org/WordSplitting" target="_blank">word splitting</a>;
+that example would _not_ produce the output shown if the whole string were quoted.
+]
+
+---
+## use [shell functions](https://www.gnu.org/software/bash/manual/html_node/Shell-Functions.html) and fear no `eval`<span style="color:red">\*</span>
+
+
+```bash
+# print list of all k-mers, for user-provided value of 'k' ($1)
+kmer() {
+    local s=
+
+    if ! [[ $1 =~ /^[1-9][0-9]+$/ ]]; then
+        # return failure if $1 is empty or non-numeric
+        echo 'usage: kmer <int>' >&2; return 1
+    fi
+
+    for (( k=1; k<=$1; k++ )); do s+="{A,C,T,G}"; done
+    eval "echo $s"
+}
+```
+
+<small>**here's what's happening**: the individual `{A,C,T,G}` brace
+expressions are built up in `k` parts in the `for` loop, inside a double-quoted
+string to defer brace expansion until it's all `eval`'d at the end</small>
+
+.footnote[
+<span style="color:red">\*</span>(just don't `eval` unsanitized user input in
+an <a href="https://en.wikipedia.org/wiki/Setuid" target="_blank">suid-root</a> script)
+]
+
+---
+## use more [aliases](https://www.gnu.org/software/bash/manual/html_node/Aliases.html)
+
+aliases can be used
+* to bundle frequently-used options, with a new name
+    * _e.g._, `alias 8mer='kmer 8'` or `alias whence='type -a'`
+* as nicknames for commands that are hard to type
+    * `alias ngacl='nfs4_getfacl'`
+* to correct common misspelings
+    * `alias pusdh='pushd'; alias podp='popd'`
+
+things to note
+* aliases can't take arguments (`$1`, `$2`, …) like functions can
+* they're temporary, unless you put them in your `~/.bashrc`
+
+---
+## use more [pipes](https://www.gnu.org/software/bash/manual/html_node/Pipelines.html) &ndash; they're so good!
+
+```bash
+# random 32-character alphanumeric string
+cat /dev/urandom       |
+    tr -dc 'a-zA-Z0-9' |
+    fold -w 32         |
+    head -1
+
+# result: tMhc9feAGgg8NS1MUu10dzNbEBf9Tdjk
+```
+
+* `cat` &ndash; outputs the contents of a file
+* `/dev/urandom` &ndash; "device special file", emits random bytes
+* `tr` &ndash; translates or deletes sets of characters
+* `fold` &ndash; wraps all lines at 32 characters
+* `head` &ndash; returns just the first line of the input<span style="color:red">\*</span>
+
+.footnote[
+<span style="color:red">*</span>`head` has a `-c` option (return a specified
+number of bytes), which would _also_ work here, since it's only ASCII
+characters; use `fold` for Unicode/multi-byte character sets
+]
+
+---
+## use more [pipes](https://www.gnu.org/software/bash/manual/html_node/Pipelines.html) (cont'd)
+    
+OK, so how do I capture that in a variable so I can do something
+useful with it?
+
+easy: [command substitution](https://www.gnu.org/software/bash/manual/html_node/Command-Substitution.html#Command-Substitution)
+<!-- -->
+
+```bash
+# capture the random string in a shell variable
+ID=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -1)
+```
+
+then, just use that variable `$ID` somewhere else.
+
+<!-- -->
+.footnote[
+**see also:** <a href="https://www.youtube.com/watch?v=sCZJblyT_XM&t=120" target="_blank">The Unix Chainsaw</a> 
+(~20 min);<a href="https://gist.github.com/earthgecko/3089509>" target="_blank">this GitHub gist</a> 
+]
+
+---
+## _really_ learn pattern matching &amp; <abbr title="regular expressions">regexes</abbr>
+
+* Bash's [shell pattern matching](https://www.gnu.org/software/bash/manual/html_node/Pattern-Matching.html) is pretty sophisticated!
+* check out the `globstar` [shell option](https://www.gnu.org/software/bash/manual/html_node/The-Shopt-Builtin.html):
+    > If set, the pattern ‘**’ used in a filename expansion
+    > context will match all files and zero or more directories and
+    > subdirectories. If the pattern is followed by a ‘/’, only directories and
+    > subdirectories match.
+
+```bash
+shopt -s globstar  # enable the option
+ls **/*.bed        # all *.bed files, in all subdirectories
+rm -r **/results/  # remove all 'results' subdirectories
+```
+
+…but for more advanced use cases, **regular expressions** (_a.k.a._, regexps,
+regexes, REs) are the two-stage super-heavy lift orbital launch vehicle of
+pattern matching languages
+
+.footnote[
+**see also:**
+The "<a href="https://en.wikipedia.org/wiki/Regular_expression" target="_blank">regular expression</a>" article on Wikipedia
+]
+
+---
+## pattern matching &amp; <abbr title="regular expressions">regexes</abbr> (cont'd)
+
+[regular expressions](https://en.wikipedia.org/wiki/Regular_expression) are
+a specification for an extremely sophisticated grammar for pattern
+matching<span style="color:red">\*</span>
+
+
+* Perl has hands-down the best [regex documentation](https://perldoc.perl.org/perlre.html)
+    * available everywhere with `man perlre`, or `perldoc perlre`
+    * see [`perltut`](https://perldoc.perl.org/perlretut.html) if you're a newbie
+    * see [`perlquick`](https://perldoc.perl.org/perlrequick.html) for the
+      cheatsheet version
+* just know that `awk`, `sed`, `grep` use more limited dialects
+  * called "Basic" and "Extended" REs; see [`regex(7)`](https://linux.die.net/man/7/regex)
+* [RegExr](https://regexr.com/) &ndash; visually test and refine complex REs
+* regexes are not, however, [a panacea](https://stackoverflow.com/a/1732454)
+
+.footnote[
+<span style="color:red">\*</span>which is so complex you can never hope to
+understand it in this lifetime, and that is OK
+]
+
+---
+## tune in next time…
+
+…for a whirlwind tour of
+
+* [`grep`](https://man.cx/grep) &ndash; the "global regular expression printer"
+* [`sed`](https://man.cx/sed) &ndash; the "stream editor"
+* [`awk`](https://man.cx/awk) &ndash; like Excel for the command line
+* [`perl`](https://man.cx/perlrun) &ndash; the pathologically eclectic rubbish
+    lister
+* and (the joys of) [regular expressions][regex7]!
+
+[regex7]: https://man.cx/regex(7)
+
+---
+class: center, middle
+
+# THANKS
+
+for your kind attention!
+
+.footnote[
+these slides are available at<br><FIXME>
+]
+
+---
+class: center, middle
+
+<small>here's a cute kitten</small>
+
+![a cute kitten](img/kitten.jpg)
+
+    </textarea>
+    <script src="https://remarkjs.com/downloads/remark-latest.min.js">
+    </script>
+    <script>
+      var slideshow = remark.create();
+    </script>
+  </body>
+</html>
+<!-- vim: ft=markdown
+-->
