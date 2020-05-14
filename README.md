@@ -1,6 +1,6 @@
 # Truly Terrific Terminal Apps (in Python)
 
-Slides are online here: <FIXME>
+[Slides](index.html)
 
 ## Credits
 
