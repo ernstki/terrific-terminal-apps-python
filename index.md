@@ -315,9 +315,9 @@ Icing on the command-line cupcake:
     * or you can [write your own][manual]
     * look at [these examples][bashcompletion]
 * a user config file
-    * _e.g._ `mysql` command line client
+    * _e.g._, `mysql` command line client
 * defaults configurable with environment variables
-    * _e.g._`LESS` environment variable for `less`
+    * _e.g._, `LESS` environment variable for `less`
 
 [manual]: https://www.gnu.org/software/bash/manual/html_node/A-Programmable-Completion-Example.html#A-Programmable-Completion-Example
 [bashcompletion]: https://github.com/scop/bash-completion
@@ -388,7 +388,7 @@ name: nextlevel
 name: demo
 ## Practical demo
 
-[`pmf`](pmf): fetch headlines of research papers from
+[`pmfind`](pmfind): fetch headlines of research papers from
 <abbr title="National Center for Biotechnology Information">NCBI</abbr>
 [PubMed][pm].
 

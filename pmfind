@@ -1,0 +1,62 @@
+#!/usr/bin/env python3
+"""
+A framework for a simple command-line program that plays nicely inside
+a Unix pipeline.
+
+This toy example queries the PubMed index of scientific literature for recent
+publications matching one or more keywords supplied as arguments.
+
+Example usage:
+
+  $ pubmedfind smoking
+  $ pubmedfind breast cancer
+  $ pubmedfind < keyword_list.txt > results.tsv
+  $ echo "term1 term2 term3" | pubmedfind
+
+Author: Kevin Ernst
+Date:   14 May 2020
+"""
+import sys
+from pmlib import *
+
+def main():
+    """
+    Searh NCBI PubMed (https://www.ncbi.nlm.nih.gov/pubmed) for given TERM(s)
+    and URLs and titles from the first page of search results, delimited by
+    tabs.
+    """
+    import argparse
+
+    parser = argparse.ArgumentParser(description=__doc__)
+
+    parser.add_argument(
+        'terms', nargs='+', metavar='TERM',
+        help='The search term(s); multiple allowed'
+    )
+
+    #parser.add_argument(
+    #    '-i', '--infile', metavar='FILE', type=argparse.FileType('r'),
+    #    help="Read search terms from an input file (or '-' for stdin)"
+    #)
+
+    #parser.add_argument(
+    #    '-s', '--separator', metavar='SEP',
+    #    help="Separator for output records (default: tab)"
+    #)
+
+    opts = parser.parse_args()
+    results = pubmed_query(opts.terms)
+
+    for result in results:
+        print('\t'.join(result))
+
+if __name__ == '__main__':
+    try:
+        main()
+    #except IOError as e:
+    #    if e.errno == errno.EPIPE:
+    #        print("\nBroken pipe", file=sys.stderr)
+    #        sys.exit()
+    #    raise
+    except KeyboardInterrupt:
+        print("\nTerminating on interrupt.", file=sys.stderr)
