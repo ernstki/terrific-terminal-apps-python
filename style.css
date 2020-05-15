@@ -39,9 +39,16 @@ li pre + ul {
 li ul {
 	padding-top: 0.3em;
 }
-li code.remark-code {
-	font-size: 0.8em;
+
+li .remark-inline-code, p .remark-inline-code {
+  font-size: 1.0em;
+  display: inline-block;
+  padding: 0.05em 0.3em;
+  /* margin: 0 0.2em; */
+  background-color: #efefef;
+  border-radius:0.4em;
 }
+
 li ul li {
 	font-size: 0.8em;
 }
@@ -80,6 +87,7 @@ h1, h2, h3 {
 	font-size: 1.1em;
 	font-family: 'Ubuntu Mono';
 }
+
 .img-float-right img {
 	float:right;
 	margin-left: 2em;
