@@ -249,33 +249,34 @@ From "Ten recommendations for creating usable bioinformatics command line softwa
 --
 
 * Always raise an error if something goes wrong
-  * I would add: **and return non-zero**
---
+  * I would add: **and return non-zero*
+
+---
+## The science of being terrific (cont'd)
 
 * Validate your parameters
   * make sure integers are integers, input files are readable
+  * and **return non-zero** exit code if not
 
----
-layout: true
-## The science of being terrific (cont'd)
-
----
+--
 * Don't hard-code any paths
   * no "magic numbers," as my boss would say
 --
 
 * Don't pollute the `$PATH`
-  * check, that the script isn't named the same/similar to other common utilities
+  * don't name script same as/similar to other common utilities
   * use subcommands (like `git`) if necessary
 --
 
 * Check that your dependencies are installed
+  * and **return non-zero** exit code if not
   * don't wait until your `subprocess.Popen` causes a traceback
 --
 
 * Don't distribute bare JAR (_Java ARchive_) files
-  * Python version: include a `setup.py` that will install your script
-    somewhere in my `PATH`
+  * for Python: include a `setup.py` with an [`entry_points`][ep] setting
+
+[ep]: https://setuptools.readthedocs.io/en/latest/setuptools.html#automatic-script-creation
 
 ---
 layout: true
