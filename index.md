@@ -81,29 +81,74 @@ Other Unix strengths:
 ---
 background-image: url(img/POSIX.jpg)
 background-color: black
+class: center
+
+.white[
+## ALSO KNOWN AS
+]
 
 .footnote[
-.white[
-[docopt intro video](https://www.youtube.com/watch?v=pXhcPJK5cMc) by Vladimir Keleshev]
+.white[[docopt intro video](https://www.youtube.com/watch?v=pXhcPJK5cMc) by Vladimir Keleshev]
 ]
 
 ---
 ## Pipe-and-filter programming
 
-Every Unix program has **one input stream**<sup>0</sup>
+Every Unix program:
+
+* has **one input stream**<sup>0</sup>
 --
-, **two output streams** (one for normal output<sup>1</sup>, the other for errors or "exceptional" output<sup>2</sup>)
+
+  * **default source is user's keyboard**
 --
-, and returns an **integer status** upon termination.<sup>3</sup>
+
+  * could also be a file (via direction operator: `< filename`)
+--
+
+  * or the output of another program (via a pipe: `prog1 | prog2`)
+--
+
+* has **two output streams**
+--
+
+  * one for "normal," expected output<sup>1</sup> <!-- this is possibly transformed intput data, hence the "filter" in "pipe-and-filte -->
+--
+
+  * the other for errors or "exceptional" output<sup>2</sup>
+--
+
+  * **default destination is user's screen** (for both)
+--
+
+      * but can be redirected _independently_ with `> filename` or `| otherprogram`
+
 
 .footnote[
-<sup>0</sup> filehandle 0, _a.k.a._ standard input or **stdin**
+<sup>0</sup> file descriptor 0, _a.k.a._ standard input or **stdin**
 
-<sup>1</sup> filehandle 1, _a.k.a._ standard output or **stdout**
+<sup>1</sup> file descriptor 1, _a.k.a._ standard output or **stdout**
 
-<sup>2</sup> filehandle 2, _a.k.a._ standard error or **stderr**
+<sup>2</sup> file descriptor 2, _a.k.a._ standard error or **stderr**
+]
 
-<sup>3</sup> usually referred to in the manuals as the "exit code"
+---
+## Pipe-and-filter programming (cont'd)
+
+
+Every Unix program also returns an **integer status** upon
+termination.<sup>1</sup>
+
+
+```bash
+# short circuit" Boolean operators
+do-this || handle-failure
+
+# and the value of $? can be used for error handling
+if [ $? -eq 128 ]; then echo "Communications failure" >&2; fi
+```
+
+.footnote[
+<sup>1</sup> usually referred to in the manuals as the "exit code"
 ]
 
 --
@@ -112,22 +157,20 @@ Because plain text is used for inter-process communication:
 
 --
 
-* commands are composable
+* commands are composable (with redirections &amp; pipes)
 
 --
-    * simply chain outputs to inputs w/ a pipe (`|`)
---
-* possible to build pipelines in steps and examine output
+* …and it's possible to build and inspect pipelines step-wise
 
 ---
 exclude: true
 ## Serious strengths of the Unix toolkit (cont'd)
 
-Manual pages<sup>[1]</sup>
+Manual pages<sup>1</sup>
 
 * have a well-defined structure that is (or becomes) familiar
     * use a shallow hierarchy (hardly ever see sub-subsections)
-    * section titles follow a familiar convention<sup>[2]</sup> `NAME`,
+    * section titles follow a familiar convention<sup>2</sup> `NAME`,
       `SYNOPSIS`, `DESCRIPTION`…
 * they get to the point
     * `SYNOPSIS` is usually all you need to use a program you've never used
@@ -136,8 +179,8 @@ Manual pages<sup>[1]</sup>
   **this is a feature**
 
 .footnote[
-[1]: courtesy <https://github.com/rtomayko/ronn#background>
-[2]: it's actually [a standard](https://pubs.opengroup.org/onlinepubs/9699919799/xrat/V4_xcu_chap01.html#tag_23_01_05)
+<sup>1</sup> courtesy <https://github.com/rtomayko/ronn#background>
+<sup>2</sup> it's actually [a standard](https://pubs.opengroup.org/onlinepubs/9699919799/xrat/V4_xcu_chap01.html#tag_23_01_05)
 ]
 
 ---
@@ -146,26 +189,28 @@ Manual pages<sup>[1]</sup>
 Print [Python end-of-support dates](https://www.python.org/downloads) as
 a formatted table:
 
-```
+```bash
 curl -sL https://www.python.org/downloads \
   | xidel - -s -e '//(span[@class="release-version"],
                       span[@class="release-end"])' \
   | paste - - \
   | grep -E '^(Python|3)' \
   | column -s $'\t' -t \
-  | sed '1s/$/\n------------------------------/'
+  | sed '1s/$/\n------------------------------/'  # GNU sed only*
+
+# result:
+# 
+# Python version  End of support
+# ------------------------------
+# 3.8             2024-10
+# 3.7             2023-06-27
+# 3.6             2021-12-23
+# 3.5             2020-09-13
 ```
 
-Result:
-
-```
-Python version  End of support
-------------------------------
-3.8             2024-10
-3.7             2023-06-27
-3.6             2021-12-23
-3.5             2020-09-13
-```
+.footnote[
+<span style="color:red">\*</span> On Mac, `sudo port install gsed` or use [Homebrew](https://brew.sh) to get GNU sed
+]
 
 ---
 ## Example of a manual page
@@ -245,14 +290,19 @@ From "Ten recommendations for creating usable bioinformatics command line softwa
 
 --
 * Do not use stdout for messages and errors
-  * stdout is for data, or other user-requested output
+
+--
+  * screw this up and users end up with data + errors intermingled
+  * **standard out is for data**, or other user-requested output
 --
 
-* Always raise an error if something goes wrong
-  * I would add: **and return non-zero*
-
+  * **standard error is for errors** and other "exceptional" messages
 ---
 ## The science of being terrific (cont'd)
+
+* Always raise an error if something goes wrong
+  * I would add, critically: **and return a non-zero exit code**
+--
 
 * Validate your parameters
   * make sure integers are integers, input files are readable
@@ -264,9 +314,11 @@ From "Ten recommendations for creating usable bioinformatics command line softwa
 --
 
 * Don't pollute the `$PATH`
-  * don't name script same as/similar to other common utilities
+  * don't name your script same as/similar to other common utilities
   * use subcommands (like `git`) if necessary
---
+
+---
+## The science of being terrific (cont'd)
 
 * Check that your dependencies are installed
   * and **return non-zero** exit code if not
@@ -274,102 +326,244 @@ From "Ten recommendations for creating usable bioinformatics command line softwa
 --
 
 * Don't distribute bare JAR (_Java ARchive_) files
-  * for Python: include a `setup.py` with an [`entry_points`][ep] setting
+  * _i.e._, give users _something they can run_
+
+--
+
+<small>Some well-known bioinformatics software is distributed as <tt>.jar</tt>
+files, and they expect their users (who probably _aren't_ Java people) to:
+
+```bash
+java -weirdJVMoptionsxX500 -c /path/to/classes -jar jarfile.jar
+```
+
+--
+
+<small>Please, think of the users. Just write a wrapper script to do that for
+them.</small>
+
+---
+## Being terrific: act like a built-in
+
+There is no reason to make users do this (even on Windows)
+
+```bash
+python your-big-long-script-name.py
+```
+
+--
+
+On macOS, Linux, and other Unices:
+
+* add a [shebang][] line like `#!/usr/bin/env python3`
+--
+
+* mark the script executable with `chmod a+x scriptname`
+--
+
+* put the script somewhere in your `$PATH` (_e.g._, `~/bin`)
+
+--
+
+<small>You could go even farther and **leave off the .py** — no one needs to
+know or care that your program is written in Python, because it will be
+literally indistinguable from any other installed programs at this
+point.</small>
+
+[shebang]: https://en.wikipedia.org/wiki/Shebang_(Unix)
+
+---
+name: windows-install
+## Act like a built-in (Windows edition)
+
+For Windows users, include pointers in your README for
+
+--
+* modifying their `PATH` variable
+
+--
+* setting up file assocations or `%PATHEXT%`<sup>1</sup> so they can run your Python script as a program, even without the `.py`
+
+--
+
+Rumor has it, these days even Windows supports Unix's `#!/path/to/interpreter`
+"shebangs" to some extent, which seems weird<sup>2</sup> but could be good for your users.
+
+--
+
+<small>Python's setuptools can actually help automate all this; see
+[this slide](#easy-to-install).</small>
+
+.footnote[
+<sup>1</sup> see this SO thread: ["Set up Python on Windows to not type “python” in cmd"](https://stackoverflow.com/questions/11472843/set-up-python-on-windows-to-not-type-python-in-cmd)
+
+<sup>2</sup> not all that weird, given their 1990s motto of ["embrace, extend, and extinguish"](https://en.wikipedia.org/wiki/Microsoft_POSIX_subsystem)
+]
+
+---
+## Being terrific: act like a built-in (cont'd)
+
+Take a page out of Unix's book:
+
+--
+* use short but memorable, names, with _personality_
+  * _e.g._, `awk`, `grep`, `jq`, `curl`, `ack`
+--
+
+* avoid mixed case names
+
+--
+
+<small>You may have a really clever acronym for your project that you're proud
+of, but your users will appreciate it if your actual program name is **short,
+sweet, and easy to type.**</small>
+
+--
+
+<small> Don't make them try to remember if it's `MEGAtool`, `MegaTool`, or `megaTOOL`. Just `megatool` is fine.<span style="color:red">\*</span></small> 
+
+.footnote[
+<span style="color:red">\*</span>Someone will inevitably change their mind about the capitalization anyway; see: [bedtools][].
+]
+
+[bedtools]: https://bedtools.readthedocs.io/en/latest/
+
+---
+name: easy-to-install
+## Being terrific: make it easy to install
+
+Publish to PyPI, so users can just `pip install megatool`
+
+--
+
+* (another reason to stick with lower-case)
+--
+
+* use setuptools' [`entry_points`][ep] to install your script as an executable in the users' `PATH`
+--
+
+* this patches over many of the rough spots [on Windows](#windows-install)
+
+--
+
+If you're not thrilled by learning [all the setuptools/PyPI stuff][pypitut]:
+
+--
+
+* `curl $INSTALLSCRIPT | bash`
+--
+
+  * not everyone's thrilled by _this_ either
+--
+
+* include a good old-fashioned Makefile
+  * with a `make install` recipe that allows a user-defined `PREFIX`
 
 [ep]: https://setuptools.readthedocs.io/en/latest/setuptools.html#automatic-script-creation
+[pypitut]: https://pythonhosted.org/an_example_pypi_project/setuptools.html
 
 ---
-layout: true
-## Being terrific
+## Being terrific: be kind to your user<span style="color:red">\*</span>
 
----
-exclude:true
-Terrific terminal applications:
+.footnote[
+<span style="color:red">\*</span> (even if your user is yourself)
 
-* have a `-h` / `--help` option
-    * limit to one screenful (~24 lines), if possible
-* have other options and commands that make sense and sound like English
-  * _e.g._, `-i` for input file, `-o` for output file
-  * `port echo installed`, `apt-get update`
+<span style="color:red">\*\*</span> you would have to _try_ to do this wrong with Python; default for `print()` is stdout
+]
+
+* print `--help` to **standard out**, not standard error<span style="color:red">\*\*</span>
+
+--
+  * .rant[wanting to see the help is not an error!]
+--
+
+  * link to your issue tracker in `--help`
+--
+
+  * limit `--help` output to about a screenful, so `| less` isn't needed
+--
+
 * send error messages and other "exceptional" output to standard error
-<!--  * `<rant>`the output of `cmd help` is not an error!`</rant>` -->
+  * _e.g._, `print("OH NOES! It broked.", file=sys.stderr)`
+
+--
+* try to make your options and operations read like English
+  * _e.g._, `-i` for input file, `-o` for output file
+
+--
+  * good examples: `port echo installed`, `apt-get update`
+
 
 ---
-Also nice to have:
+## Being terrific: also nice to have
 
-* link to your issue tracker in `--help`
-* include a `--help-all` or `--manual` for detailed usage
-* give each subcommand has its own help (_e.g._, `git commit --help`)
-* an easy installation method
-  * `curl` an installation script (ehhhhhhhh…)
-  * a package in PyPI, so users can `pip install`
-  * `make install PREFIX=$HOME/.local/bin`
-* tests
-  * Expect or DejaGnu are probably good options
-  * Click has support for common Python test frameworks
+* include a `--help-all` for detailed usage
+  * whatever doesn't fit on one screen in `--help`
+--
+
+  * …but is still useful enough the user shouldn't have to go to the full
+    documentation on the project web site or whatever
+--
+* consider baking _all_ of your documentation into the tool itself
+--
+
+  * `go` does this, _e.g._, `go help get`
+--
+
+  * some tools have a `--manual` option (_e.g._, Perl tools using [Pod::Usage][pu])
+--
+
+* give each subcommand its own help
+  * how Git does it: `git subcommand --help` opens `man git-subcommand`
 
 ---
-Icing on the command-line cupcake:
+## Being terrific: also nice to have (cont'd)
+
+* tests (so you can tell if contributors break your code)
+  * Click has [built-in support][clicktest] for automated tests
+  * [Expect][] or [DejaGnu][] are interesting (if old-school) options
+
+[pu]: https://perldoc.perl.org/Pod/Usage.html
+[clicktest]: https://click.palletsprojects.com/en/7.x/testing/
+[expect]: https://blog.robertelder.org/don-libes-expect-unix-automation-tool/
+[dejagnu]: https://www.gnu.org/software/dejagnu/
+---
+## Being terrific: icing on the CLI cupcake
 
 * programmable completion
-    * Click provides facilities for this
+    * Click provides [facilities][cc] for this (Bash only, I think)
     * or you can [write your own][manual]
     * look at [these examples][bashcompletion]
-* a user config file
+* a user config file where they can specify default behavior
     * _e.g._, `mysql` command line client
 * defaults configurable with environment variables
     * _e.g._, `LESS` environment variable for `less`
 
+[cc]: https://click.palletsprojects.com/en/7.x/bashcomplete/
 [manual]: https://www.gnu.org/software/bash/manual/html_node/A-Programmable-Completion-Example.html#A-Programmable-Completion-Example
 [bashcompletion]: https://github.com/scop/bash-completion
 
 ---
-Over-9000-Super-Saiyan stuff:
+## Over-9000-Super-Saiyan stuff
 
 * an interactive shell
-    * MacPorts `port`, `mysql`, `python`
+    * MacPorts' `port` command, `mysql`, `python`
 * a front-end that communicates with a persistent daemon
     * _e.g._, `clamscan`, `spamassassin`, Heroku and AWS clients
 
----
-layout:true
+Your Friday-after-lunch, scratch-an-itch project probably isn't going to benefit
+from an interactive shell or
+<abbr title="Interprocess Communcation">IPC</abbr> with a long-running daemon.
 
----
-## Please do
-
-* limit `--help` to a screenful (or less)
-* print `--help` to standard output
-    * you'll know if you're printing to standard error
-
-<!-- * messages to stderr, yes, except in this case
-    * I went _years_ before I learned `|&`
-    * otherwise: `cmd help 2&gt;&1 | less` is required -->
-
----
-## Please do (cont'd)
-
-* act like a built-in program; not
-  ```bash
-  python your-big-long-script-name.py
-  ```
-  * use a `#!/usr/bin/env` shebang on Linux/Unix
-  * or file association with `%PATHEXT%` in
-    Windows<span style="color:red">\*</span>
-  * short, memorable, names with personality are ideal
-      * `awk`, `grep`, `jq`, `curl`, `ack`
-* provide an auto-confirm option
-  * `--yes`, for example, to confirm overwriting a file
-
-.footnote[
-<span style="color:red">\*</span>See this SO thread: ["Set up Python on Windows to not type “python” in cmd"](https://stackoverflow.com/questions/11472843/set-up-python-on-windows-to-not-type-python-in-cmd)
-]
+<small>However, there _are_ Readline bindings and introspection / autocompletion
+libraries for Python ([jedi](https://github.com/davidhalter/jedi) is one that
+comes to mind), so an interactive shell might not be as far off as you
+think.</small>
 
 ---
 name: nextlevel
 ## Next-level stuff
 
-* making installation easy
-  * PyPI, `curl | bash`, or `make install`
 * a manual page so that `man yourcommand` works
   * but you don't have to learn [roff][], because there's
    [ronn](https://github.com/rtomayko/ronn)
@@ -389,19 +583,22 @@ name: nextlevel
 name: demo
 ## Practical demo
 
-[`pmfind`][pmfind]: fetch headlines of research papers from
-<abbr title="National Center for Biotechnology Information">NCBI</abbr>'s
+### [`pmfind`][pmfind]
+
+Scrapes the titles and URLs of research papers matching user-provided search terms from <abbr title="National Center for Biotechnology Information">NCBI</abbr>'s
 [PubMed][pm] index.
 
---
-
-Yes, there is an [API][entrez].
+Only the first page of results, though.
 
 --
 
-However scraping the headline and URL from the web page is a one-liner in
+<small>Yes, as a matter of fact, there _is_ an [API][entrez].</small>
+
+--
+
+<small>Scraping the headline and URL from the web page is a one-liner in
 [XPath][xpath], and I didn't want to be unwrapping mountains of JSON for
-a simple example.
+a simple demo.</small>
 
 [pmfind]: https://github.com/ernstki/terrific-terminal-apps-python/blob/master/pmfind
 [pm]: https://pubmed.ncbi.nlm.nih.gov/
@@ -409,8 +606,24 @@ a simple example.
 [xpath]: https://www.w3.org/TR/xpath/all/
 
 ---
+## `pmfind`: next steps
+
+* allow reading from an input file (`--i` / `--input`)
+* allow specifying an alternate delimiter (`-s` / `--sep`)
+* `setup.py` with an `entry_point`
+  * so that an executable is automatically created in the user's `PATH`
+--
+
+* profit!
+
+---
+class: center, middle
+
+# BONUS SLIDES
+
+---
 name: clipboard
-## Tips for working with the clipboard
+## Piping to/from the clipboard
 
 macOS has `pbcopy` and `pbpaste`.
 
@@ -434,7 +647,7 @@ MyProgram | Get-Clipboard
 [gc]: https://ss64.com/ps/get-clipboard.html
 
 ---
-## Tips for working with the clipboard (cont'd)
+## Piping to/from the clipboard (cont'd)
 
 [pyperclip][pyper] seems to be a good cross-platform library for
 reading/writing the clipboard from Python programs.
@@ -449,10 +662,10 @@ Remember, One Thing Well.
 name: powershell
 ## Windows: PowerShell and CMD.EXE
 
-In spite of this having been mostly "Unixy," this is PLENTY applicable for
-Windows people as well.
+In spite of the early "Unixy" pipe-and-filter discussion, the concepts are
+PLENTY applicable for Windows people as well.
 
-There's a `CLIP.EXE` that comes with Windows, so this works<span style="color:red">\*</span>
+`CLIP.EXE` comes with Windows, so this works<span style="color:red">\*</span>
 
 ```dos
 your-program | clip
@@ -467,7 +680,7 @@ powershell -command get-clipboard | your-program-that-reads-stdin
 .footnote[
 <span style="color:red">\*</span> Is that too much typing for you? Create a [DOSKEY macro](https://superuser.com/a/1134468/73744)!
 
-<span style="color:red">\*\*</span>I _think_ this works in the copy-to-clipboard, too?
+<span style="color:red">\*\*</span>I _think_ this works in the copy <em>to</em> clipboard direction, too?
 ]
 
 <!--
@@ -509,16 +722,19 @@ which will load up every time you run PowerShell.
 # See also
 
 * [UNIX: Making Computers Easier To Use](https://www.youtube.com/watch?v=XvDZLjaCJuw) — AT&T Archives film from 1982, Bell Laboratories
-    * see [this gist](https://gist.github.com/ernstki/1432b3ea843410a4826ce9cb1584d7b5) for a step-by-step recreation of the spellchecker and talking calculator in Bash and Python
-* [The Unix Chainsaw][3] by Gary Bernhardt
-* PyCon UK 2012: [Create *beautiful* command-line interfaces with Python][1] (by the author of [docopt][2])
+  * really informative, and (to a Unix nerd, anyway) doesn't feel dated
+  * see [this gist](https://gist.github.com/ernstki/1432b3ea843410a4826ce9cb1584d7b5) for a step-by-step recreation of the spellchecker and talking calculator in modern shell script and Python
+* [The Unix Chainsaw][chainsaw] by Gary Bernhardt
+  * very revelatory talk about using Unix pipes and functions to their fullest potential, to encapsulate complexity
+* [Create *beautiful* command-line interfaces with Python][pycon2012]
+  * from PyCon 2012, by the author of [docopt][]
 * [jlevy/the-art-of-command-line](https://github.com/jlevy/the-art-of-command-line)
 * Internet your pipes and pipe the Internet with [`curl`](https://curl.haxx.se)
     * just look at the protocol support!
 
-[1]: https://www.youtube.com/watch?v=pXhcPJK5cMc
-[2]: https://github.com/docopt/docopt
-[3]: https://www.youtube.com/watch?v=sCZJblyT_XM
+[pycon2012]: https://www.youtube.com/watch?v=pXhcPJK5cMc
+[docopt]: https://github.com/docopt/docopt
+[chainsaw]: https://www.youtube.com/watch?v=sCZJblyT_XM
 
 ---
 # .rainbow[BONUS ROUND!]
@@ -560,22 +776,22 @@ The URL _is_ the interface:
 ---
 # References
 
-1. ["Ten recommendations for creating usable bioinformatics command line software"][1] by Torsten Seemann
-2. ["Ten Essential Development Practices"][2] by Damian Conway
-3. [argparse][3] - from the Python standard library
-  * [official tutorial][4]
-4. [Click][5] - by [Armin Ronacher](https://github.com/mitsuhiko), and others
-  * [API documentation][6]
-5. [docopt][6] - by [Vladimir Keleshev](https://github.com/keleshev), and others
-  * [try it in a browser][7]
+1. ["Ten recommendations for creating usable bioinformatics command line software"][tenrec] by Torsten Seemann
+2. ["Ten Essential Development Practices"][dc] by Damian Conway
+3. [argparse][] - from the Python standard library
+  * [official tutorial][aptut]
+4. [Click][] - by [Armin Ronacher](https://github.com/mitsuhiko), and others
+  * [API documentation][clickdoc]
+5. [docopt][] - by [Vladimir Keleshev](https://github.com/keleshev), and others
+  * [try it in a browser][trydocopt]
 
-[1]: https://www.perl.com/pub/2005/07/14/bestpractices.html/
-[2]: https://doi.org/10.1186/2047-217X-2-15
-[3]: https://docs.python.org/3/library/argparse.html
-[4]: https://docs.python.org/3/howto/argparse.html
-[5]: https://palletsprojects.com/p/click/
-[6]: http://docopt.org/
-[7]: http://try.docopt.org/
+[tenrec]: https://doi.org/10.1186/2047-217X-2-15
+[dc]: https://www.perl.com/pub/2005/07/14/bestpractices.html/
+[argparse]: https://docs.python.org/3/library/argparse.html
+[aptut]: https://docs.python.org/3/howto/argparse.html
+[click]: https://palletsprojects.com/p/click/
+[clickdoc]: https://click.palletsprojects.com/en/7.x/
+[trydocopt]: http://try.docopt.org/
 
 ---
 class: center, middle

@@ -43,10 +43,18 @@ li ul {
 li .remark-inline-code, p .remark-inline-code {
   font-size: 1.0em;
   display: inline-block;
-  padding: 0.05em 0.3em;
-  /* margin: 0 0.2em; */
+  padding: 0.05em 0.3em 0.1em;
+  margin: 0.05em;
   background-color: #efefef;
   border-radius:0.4em;
+}
+
+.remark-code {
+  font-size: 1.1em;
+}
+
+li .remark-code {
+  font-size: 0.8em;
 }
 
 li ul li {
@@ -83,9 +91,22 @@ h1, h2, h3 {
   margin:0.5rem;
 }
 
-.remark-code, .remark-inline-code {
-	font-size: 1.1em;
+tt, .remark-code, .remark-inline-code {
 	font-family: 'Ubuntu Mono';
+}
+
+.rant::before {
+  content: '<rant>';
+  font-family: 'Ubuntu Mono';
+  color:red;
+  padding-right: 0.2em;
+}
+
+.rant::after {
+  content: '</rant>';
+  font-family: 'Ubuntu Mono';
+  color:red;
+  padding-left: 0.2em;
 }
 
 .img-float-right img {

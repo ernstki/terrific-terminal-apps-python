@@ -1,5 +1,6 @@
 .*sw?
 *~
+.idea/
 modd.conf
 .DS_Store
 sweethome.html

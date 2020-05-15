@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 ##
-##  A framework for a simple command-line program using argparse for input
+##  A framework for a simple command-line program using Click for input
 ##  argument parsing, that plays nicely inside a Unix pipeline.
 ##
 ##  This toy example queries the PubMed index of scientific literature for
