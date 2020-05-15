@@ -8,10 +8,10 @@ publications matching one or more keywords supplied as arguments.
 
 Example usage:
 
-  $ pubmedfind smoking
-  $ pubmedfind breast cancer
-  $ pubmedfind < keyword_list.txt > results.tsv
-  $ echo "term1 term2 term3" | pubmedfind
+  $ pmfind smoking
+  $ pmfind breast cancer
+  $ pmfind < keyword_list.txt > results.tsv
+  $ echo "term1 term2 term3" | pmfind
 
 Author: Kevin Ernst
 Date:   14 May 2020
