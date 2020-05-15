@@ -388,7 +388,7 @@ name: nextlevel
 name: demo
 ## Practical demo
 
-[`pmfind`](pmfind): fetch headlines of research papers from
+[`pmfind`][pmfind]: fetch headlines of research papers from
 <abbr title="National Center for Biotechnology Information">NCBI</abbr>
 [PubMed][pm].
 
@@ -402,6 +402,7 @@ However scraping the headline and URL from the web page is a one-liner in
 [XPath][xpath], and I didn't want to be unwrapping mountains of JSON for
 a simple example.
 
+[pmfind]: https://github.com/ernstki/terrific-terminal-apps-python/blob/master/pmfind
 [pm]: https://pubmed.ncbi.nlm.nih.gov/
 [entrez]: https://www.ncbi.nlm.nih.gov/books/NBK25500/
 [xpath]: https://www.w3.org/TR/xpath/all/
