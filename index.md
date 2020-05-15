@@ -544,23 +544,6 @@ If you're not thrilled by learning [all the setuptools/PyPI stuff][pypitut]:
 [bashcompletion]: https://github.com/scop/bash-completion
 
 ---
-## Over-9000-Super-Saiyan stuff
-
-* an interactive shell
-    * MacPorts' `port` command, `mysql`, `python`
-* a front-end that communicates with a persistent daemon
-    * _e.g._, `clamscan`, `spamassassin`, Heroku and AWS clients
-
-Your Friday-after-lunch, scratch-an-itch project probably isn't going to benefit
-from an interactive shell or
-<abbr title="Interprocess Communcation">IPC</abbr> with a long-running daemon.
-
-<small>However, there _are_ Readline bindings and introspection / autocompletion
-libraries for Python ([jedi](https://github.com/davidhalter/jedi) is one that
-comes to mind), so an interactive shell might not be as far off as you
-think.</small>
-
----
 name: nextlevel
 ## Next-level stuff
 
@@ -578,6 +561,23 @@ name: nextlevel
   * example: `python3 -m http.server` (so memorable!)
 
 [roff]: https://linux.die.net/man/7/roff
+
+---
+## Over-9000-Super-Saiyan stuff
+
+* an interactive shell
+    * MacPorts' `port` command, `mysql`, `python`
+* a front-end that communicates with a persistent daemon
+    * _e.g._, `clamscan`, `spamassassin`, Heroku and AWS clients
+
+Your Friday-after-lunch, scratch-an-itch project probably isn't going to benefit
+from an interactive shell or
+<abbr title="Interprocess Communcation">IPC</abbr> with a long-running daemon.
+
+<small>However, there _are_ Readline bindings and introspection / autocompletion
+libraries for Python ([jedi](https://github.com/davidhalter/jedi) is one that
+comes to mind), so an interactive shell might not be as far off as you
+think.</small>
 
 ---
 name: demo
