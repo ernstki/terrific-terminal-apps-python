@@ -389,8 +389,8 @@ name: demo
 ## Practical demo
 
 [`pmfind`][pmfind]: fetch headlines of research papers from
-<abbr title="National Center for Biotechnology Information">NCBI</abbr>
-[PubMed][pm].
+<abbr title="National Center for Biotechnology Information">NCBI</abbr>'s
+[PubMed][pm] index.
 
 --
 
