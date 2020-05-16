@@ -22,20 +22,26 @@ Text licensed under a <a rel="license" href="http://creativecommons.org/licenses
 * philosophizing
 
 --
-* figure out what makes a good <abbr title="comand-line interface">CLI</abbr>
+* hashing out what makes a good <abbr title="comand-line interface">CLI</abbr>
 
 --
     * using _science!_
 --
-* some dos and don'ts
+* [some dos and don'ts](#being-terrific)
 
 --
-* practical demonstration
+* [practical demonstration](#demo)
     * argparse
     * Click
     * docopt
 --
 * [next-level stuff](#nextlevel)
+
+--
+* [other useful resources]
+
+--
+* [stuff I refered to when making this]
 
 ---
 ## All on the same page?
@@ -51,7 +57,7 @@ Text licensed under a <a rel="license" href="http://creativecommons.org/licenses
 
 ## Unix philosophy
 
-Credited [Doug McIlroy](https://en.wikipedia.org/wiki/Douglas_McIlroy) (who came up with Unix pipelines<sup>1</sup>), the Unix philsophy is summed up:
+Credited [Doug McIlroy](https://en.wikipedia.org/wiki/Douglas_McIlroy) (who came up with Unix pipelines).fn[1], the Unix philsophy is summed up:
 
 --
 
@@ -70,146 +76,27 @@ Credited [Doug McIlroy](https://en.wikipedia.org/wiki/Douglas_McIlroy) (who came
 Other Unix strengths:
 
 * documentation is excellent, and has a standard format
-* program options have a standard format<sup>2</sup>
+* program options have a standard format.fn[2]
 
 .footnote[
-<sup>1</sup> <https://en.wikipedia.org/wiki/Unix_philosophy>
+.fn[1] <https://en.wikipedia.org/wiki/Unix_philosophy>
 
-<sup>2</sup> codified in [IEEE Std 1003](https://en.wikipedia.org/wiki/POSIX)
+.fn[2] codified in [IEEE Std 1003](https://en.wikipedia.org/wiki/POSIX)
 ]
 
 ---
-background-image: url(img/POSIX.jpg)
 background-color: black
 class: center
+<!--background-image url(img/POSIX.jpg)-->
 
 .white[
 ## ALSO KNOWN AS
 ]
 
+<iframe width="640" height="400" src="https://www.youtube-nocookie.com/embed/pXhcPJK5cMc?start=337" frameborder="0" allow="accelerometer; no-autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 .footnote[
 .white[[docopt intro video](https://www.youtube.com/watch?v=pXhcPJK5cMc) by Vladimir Keleshev]
-]
-
----
-## Pipe-and-filter programming
-
-Every Unix program:
-
-* has **one input stream**<sup>0</sup>
---
-
-  * **default source is user's keyboard**
---
-
-  * could also be a file (via direction operator: `< filename`)
---
-
-  * or the output of another program (via a pipe: `prog1 | prog2`)
---
-
-* has **two output streams**
---
-
-  * one for "normal," expected output<sup>1</sup> <!-- this is possibly transformed intput data, hence the "filter" in "pipe-and-filte -->
---
-
-  * the other for errors or "exceptional" output<sup>2</sup>
---
-
-  * **default destination is user's screen** (for both)
---
-
-      * but can be redirected _independently_ with `> filename` or `| otherprogram`
-
-
-.footnote[
-<sup>0</sup> file descriptor 0, _a.k.a._ standard input or **stdin**
-
-<sup>1</sup> file descriptor 1, _a.k.a._ standard output or **stdout**
-
-<sup>2</sup> file descriptor 2, _a.k.a._ standard error or **stderr**
-]
-
----
-## Pipe-and-filter programming (cont'd)
-
-
-Every Unix program also returns an **integer status** upon
-termination.<sup>1</sup>
-
-
-```bash
-# short circuit" Boolean operators
-do-this || handle-failure
-
-# and the value of $? can be used for error handling
-if [ $? -eq 128 ]; then echo "Communications failure" >&2; fi
-```
-
-.footnote[
-<sup>1</sup> usually referred to in the manuals as the "exit code"
-]
-
---
-
-Because plain text is used for inter-process communication:
-
---
-
-* commands are composable (with redirections &amp; pipes)
-
---
-* …and it's possible to build and inspect pipelines step-wise
-
----
-exclude: true
-## Serious strengths of the Unix toolkit (cont'd)
-
-Manual pages<sup>1</sup>
-
-* have a well-defined structure that is (or becomes) familiar
-    * use a shallow hierarchy (hardly ever see sub-subsections)
-    * section titles follow a familiar convention<sup>2</sup> `NAME`,
-      `SYNOPSIS`, `DESCRIPTION`…
-* they get to the point
-    * `SYNOPSIS` is usually all you need to use a program you've never used
-      before
-* they have an _extremely_ limited set of formatting capabilities, and
-  **this is a feature**
-
-.footnote[
-<sup>1</sup> courtesy <https://github.com/rtomayko/ronn#background>
-<sup>2</sup> it's actually [a standard](https://pubs.opengroup.org/onlinepubs/9699919799/xrat/V4_xcu_chap01.html#tag_23_01_05)
-]
-
----
-## Unix pipeline example
-
-Print [Python end-of-support dates](https://www.python.org/downloads) as
-a formatted table:
-
-```bash
-curl -sL https://www.python.org/downloads \
-  | xidel - -s -e '//(span[@class="release-version"],
-                      span[@class="release-end"])' \
-  | paste - - \
-  | grep -E '^(Python|3)' \
-  | column -s $'\t' -t \
-  | sed '1s/$/\n------------------------------/'  # GNU sed only*
-
-# result:
-# 
-# Python version  End of support
-# ------------------------------
-# 3.8             2024-10
-# 3.7             2023-06-27
-# 3.6             2021-12-23
-# 3.5             2020-09-13
-```
-
-.footnote[
-<span style="color:red">\*</span> On Mac, `sudo port install gsed` or use [Homebrew](https://brew.sh) to get GNU sed
 ]
 
 ---
@@ -243,39 +130,274 @@ DESCRIPTION
 ]
 
 ---
-## Not all roses
+## The Unix manual
 
-* "one thing well" sometimes leads to specialied mini-languages you need to
-  learn
+Designed as operator manuals for a 1970s telcom, Unix "man" pages have aged suprisingly well..fn[1]
+
+* they have a consistent, well-defined structure
+  * designed to be printed as seven volumes (see `man intro`)
+  * section titles follow familiar convention.fn[2]
+  * shallow hierarchy (hardly ever see sub-subsections)
 --
 
-  * _e.g._ `sed` and `awk` and regular expressions
+* they get to the point
+  * usually `SYNOPSIS` is enough to get working
+--
+
+* they have a limited set of formatting capabilities
+--
+
+  * **this is a feature**
+
+.footnote[
+.fn[1] courtesy <https://github.com/rtomayko/ronn#background>
+
+.fn[2] it's actually [a standard](https://pubs.opengroup.org/onlinepubs/9699919799/xrat/V4_xcu_chap01.html#tag_23_01_05)
+]
+
+---
+
+## Unix man pages are meant to be printed
+
+--
+
+Like... a manual. And they made some _really_ good design choices back in the
+60s and 70s at Bell Labs..fn[1]
+
+--
+
+* written in a typesetting language called [roff]
+--
+
+* handed off to a program (called `roff`) that formats them
+
+--
+  * …specifically for the output device (computer screen or printer) 
+
+--
+  * so manual pages can "re-flow" and adapt to different screen sizes!
+
+--
+
+Try this on any reasonably-equipped Linux box:
+
+```bash
+groff -man <(zcat $(man -w ls)) | ps2pdf - ls.pdf
+```
+
+.footnote[
+.fn[1] for a history lesson, see [[1]](https://truss.works/blog/2016/12/9/man-splained), [[2]](https://manpages.bsd.lv/history.html)
+]
+
+[roff]: https://linux.die.net/man/7/roff
+
+---
+## Pipe-and-filter programming
+
+Another innovation of Unix.ast[] is the notion of program input/output **flowing in "streams"**
+
+--
+* …and being transformed by intermediate "filter" programs
+  * before arriving in a disk file,&nbsp;
+--
+the user's screen,&nbsp;
+--
+or another output device like a printer
+
+--
+
+This means of <abbr title="Inter-process communication">IPC</abbr>
+is commonly referred to as the Unix "pipe."
+
+--
+
+Because plain text is used as the medium:
+
+--
+
+* commands are composable (you can plug them together)
+
+--
+* …and it's possible to build and inspect pipelines step-wise
+
+.footnote[
+.ast[] (if not _strictly_ a Bell Labs invention)
+]
+
+---
+## Pipe-and-filter programming (cont'd)
+
+Every Unix program has **one input stream**.fn[0]
+
+--
+
+The default source of input is **the user's keyboard**
+--
+
+* could also be a disk file
+  * via direction operator: `< filename`
+--
+
+* or the output of another program
+  * via a pipe: `prog1 | prog2`
+  * via a process substitution.fn[1]
+
+.footnote[
+.fn[0] file descriptor 0, _a.k.a._ standard input or **stdin**
+
+.fn[1] a useful [feature of the Bash shell][procsubst], but beyond the
+scope here
+]
+
+[cmdsubst]: https://www.gnu.org/software/bash/manual/html_node/Command-Substitution.html
+[procsubst]: https://www.gnu.org/software/bash/manual/html_node/Process-Substitution.html
+
+---
+## Pipe-and-filter programming (cont'd)
+
+Every Unix program also has **two output streams**
+--
+
+* one for "**normal**," expected output.fn[1] <!-- this is possibly transformed intput data, hence the "filter" in "pipe-and-filte -->
+--
+
+* the other for **error messages** or other "exceptional" output.fn[2]
+
+--
+
+The default destination (for both) is **the user's screen**
+--
+
+* but each stream can be re-routed _independently_
+  * with these operators: `> filename` or `| otherprogram`
+
+.sm[This means you can handle errors (_e.g._, write them to a log file)
+separately from the processing of data, which passes to the next
+program in a pipeline.] 
+
+.footnote[
+.fn[1] file descriptor 1, _a.k.a._ standard output or **stdout**
+
+.fn[2] file descriptor 2, _a.k.a._ standard error or **stderr**
+]
+
+---
+## Pipe-and-filter programming (cont'd)
+
+Every Unix program also returns an **integer status** upon
+termination..fn[1]
+
+--
+
+A value of **0** means **success** (Boolean true).
+--
+<br>And any **non-zero** value means **failure** (Boolean false)..fn[2]
+
+--
+
+```bash
+# so that short circuit" Boolean operators like '||' and '&&'…
+try-this || handle-failure
+
+# …and the value of $? can be used for error handling
+if [ $? -eq 128 ]; then echo "Communications failure" >&2; fi
+```
+
+.footnote[
+ .fn[1] usually referred to in the manuals as the "exit code"
+
+ .fn[2] search for "exit status" in the [`ls` man page](https://linux.die.net/man/1/ls), for example
+]
+
+---
+class: center, middle
+background-color: black
+
+.white[
+Bell Labs' [Lorinda Cherry][lc] explains Unix pipes (@[13:20][tcalc])
+]
+
+<iframe width="640" height="400" src="https://www.youtube-nocookie.com/embed/XvDZLjaCJuw?start=800" frameborder="0" allow="accelerometer; no-autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+.white[.sm[See also: [Brian Kernighan's][lc] spellchecker demo at
+[5:15][spellcheck],<br>and [this gist][tcgist] recreating them both with modern
+Bash and Python.]]
+
+[bk]: https://en.wikipedia.org/wiki/Brian_Kernighan
+[lc]: https://en.wikipedia.org/wiki/Lorinda_Cherry
+[spellcheck]: https://youtu.be/XvDZLjaCJuw?t=315 
+[tcalc]: https://youtu.be/XvDZLjaCJuw?t=800
+[tcgist]: https://gist.github.com/ernstki/1432b3ea843410a4826ce9cb1584d7b5
+
+---
+### Contemporary Unix pipeline example
+
+```bash
+# print Python versions and end-of-support dates from
+# https://www.python.org/downloads as a formatted table:
+
+curl -sL https://www.python.org/downloads \
+  | xidel - -s -e '//(span[@class="release-version"],
+                      span[@class="release-end"])' \
+  | paste - - \
+  | grep -E '^(Python|3)' \
+  | column -s $'\t' -t \
+  | sed '1s/$/\n------------------------------/'  # GNU sed only*
+
+# result:
+# 
+# Python version  End of support
+# ------------------------------
+# 3.8             2024-10
+# 3.7             2023-06-27
+# 3.6             2021-12-23
+# 3.5             2020-09-13
+```
+
+.footnote[
+.ast[] On Mac, use [MacPorts](https://macports.org)
+or [Homebrew](https://brew.sh) to get GNU sed, or replace `\n` with a literal
+newlie
+]
+
+---
+## It's not all roses, though
+
 --
 
 * it takes time to become enculturated
-  * why are the commands so short?
   * what are these funny symbols (`>/dev/null 2>&1`)?
   * what does `man(1)` mean? isn't that sexist?
+
+--
+* "one thing well" sometimes leads to specialized mini-languages
+  you'd have to learn to get the full effect
 --
 
-* terseness and cleverness were assets when programming 1960s mainframes
+  * _e.g._ [`sed`][sed] and [`awk`][awk] and [regular expressions][regex]
 --
 
-    * but sometimes it borders on cryptic
+* terseness and cleverness were assets when programming 1960s mainframes&nbsp;
 --
-* input assumed to come from stdin when no arguments
---
+(but parts can be _too_ terse and clever)
 
-    * can lead unfamiliar users to think a program is frozen
-    * _e.g._, `awk` when you forget the file argument
+--
+* lacking file argument, input is assumed to come from stdin
+    * default input source is the terminal (keyboard)
+    * can lead uninitiated users to think a program is frozen
+      <!-- _e.g._, `awk` when you forget the file argument -->
+
+[sed]: https://linux.die.net/man/1/sed
+[awk]: https://linux.die.net/man/1/awk
+[regex]: https://linux.die.net/man/7/regex
 
 ---
 ## The science of being terrific
 
-From "Ten recommendations for creating usable bioinformatics command line software"<sup>1</sup>
+From "Ten recommendations for creating usable bioinformatics command line software".fn[1]
 
 .footnote[
-<sup>1</sup> Torsten Seemann; <https://doi.org/10.1186/2047-217X-2-15>
+ .fn[1] Torsten Seemann; <https://doi.org/10.1186/2047-217X-2-15>
 ]
 
 --
@@ -330,19 +452,20 @@ From "Ten recommendations for creating usable bioinformatics command line softwa
 
 --
 
-<small>Some well-known bioinformatics software is distributed as <tt>.jar</tt>
-files, and they expect their users (who probably _aren't_ Java people) to:
+.sm[Some well-known bioinformatics software is distributed as <tt>.jar</tt>
+files, and they expect their users (who probably _aren't_ Java people) to:]
 
 ```bash
-java -weirdJVMoptionsxX500 -c /path/to/classes -jar jarfile.jar
+java -weirdJVMopts -Xmx1G -c /class/path -jar jarfile.jar
 ```
 
 --
 
-<small>Please, think of the users. Just write a wrapper script to do that for
-them.</small>
+.sm[Please, think of the users. Just write a wrapper script to do that for
+them.]
 
 ---
+name: being-terrific
 ## Being terrific: act like a built-in
 
 There is no reason to make users do this (even on Windows)
@@ -365,10 +488,10 @@ On macOS, Linux, and other Unices:
 
 --
 
-<small>You could go even farther and **leave off the .py** — no one needs to
+.sm[You could go even farther and **leave off the .py** — no one needs to
 know or care that your program is written in Python, because it will be
 literally indistinguable from any other installed programs at this
-point.</small>
+point.]
 
 [shebang]: https://en.wikipedia.org/wiki/Shebang_(Unix)
 
@@ -382,22 +505,24 @@ For Windows users, include pointers in your README for
 * modifying their `PATH` variable
 
 --
-* setting up file assocations or `%PATHEXT%`<sup>1</sup> so they can run your Python script as a program, even without the `.py`
+* setting up file assocations or `%PATHEXT%`.fn[1] so they can run your Python
+  script as a program, even without the `.py`
 
 --
 
 Rumor has it, these days even Windows supports Unix's `#!/path/to/interpreter`
-"shebangs" to some extent, which seems weird<sup>2</sup> but could be good for your users.
+"shebangs" to some extent, which seems weird.fn[2] but could be good for your
+users.
 
 --
 
-<small>Python's setuptools can actually help automate all this; see
-[this slide](#easy-to-install).</small>
+.sm[Python's setuptools can actually help automate all this; see
+[this slide](#easy-to-install).]
 
 .footnote[
-<sup>1</sup> see this SO thread: ["Set up Python on Windows to not type “python” in cmd"](https://stackoverflow.com/questions/11472843/set-up-python-on-windows-to-not-type-python-in-cmd)
+ .fn[1] see this SO thread: ["Set up Python on Windows to not type “python” in cmd"](https://stackoverflow.com/questions/11472843/set-up-python-on-windows-to-not-type-python-in-cmd)
 
-<sup>2</sup> not all that weird, given their 1990s motto of ["embrace, extend, and extinguish"](https://en.wikipedia.org/wiki/Microsoft_POSIX_subsystem)
+ .fn[2] not all that weird, given their 1990s motto of ["embrace, extend, and extinguish"](https://en.wikipedia.org/wiki/Microsoft_POSIX_subsystem)
 ]
 
 ---
@@ -414,16 +539,17 @@ Take a page out of Unix's book:
 
 --
 
-<small>You may have a really clever acronym for your project that you're proud
+.sm[You may have a really clever acronym for your project that you're proud
 of, but your users will appreciate it if your actual program name is **short,
-sweet, and easy to type.**</small>
+sweet, and easy to type.**]
 
 --
 
-<small> Don't make them try to remember if it's `MEGAtool`, `MegaTool`, or `megaTOOL`. Just `megatool` is fine.<span style="color:red">\*</span></small> 
+<small> Don't make them try to remember if it's `MEGAtool`, `MegaTool`, or `megaTOOL`. Just `megatool` is fine..ast[]</small> 
 
 .footnote[
-<span style="color:red">\*</span>Someone will inevitably change their mind about the capitalization anyway; see: [bedtools][].
+.ast[] someone will inevitably change their mind about the capitalization
+anyway; see: [bedtools][]
 ]
 
 [bedtools]: https://bedtools.readthedocs.io/en/latest/
@@ -457,21 +583,21 @@ If you're not thrilled by learning [all the setuptools/PyPI stuff][pypitut]:
 --
 
 * include a good old-fashioned Makefile
-  * with a `make install` recipe that allows a user-defined `PREFIX`
+  * with a `make install` that allows a user-defined `PREFIX`
 
 [ep]: https://setuptools.readthedocs.io/en/latest/setuptools.html#automatic-script-creation
 [pypitut]: https://pythonhosted.org/an_example_pypi_project/setuptools.html
 
 ---
-## Being terrific: be kind to your user<span style="color:red">\*</span>
+## Being terrific: be kind to your user.ast[]
 
 .footnote[
-<span style="color:red">\*</span> (even if your user is yourself)
+.ast[] (even if your user is yourself)
 
-<span style="color:red">\*\*</span> you would have to _try_ to do this wrong with Python; default for `print()` is stdout
+.ast[*] you would have to _try_ to do this wrong with Python; default for `print()` is stdout
 ]
 
-* print `--help` to **standard out**, not standard error<span style="color:red">\*\*</span>
+* print `--help` to **standard out**, not standard error.ast[*]
 
 --
   * .rant[wanting to see the help is not an error!]
@@ -483,7 +609,7 @@ If you're not thrilled by learning [all the setuptools/PyPI stuff][pypitut]:
   * limit `--help` output to about a screenful, so `| less` isn't needed
 --
 
-* send error messages and other "exceptional" output to standard error
+* send errors and other "exceptional" output to standard error
   * _e.g._, `print("OH NOES! It broked.", file=sys.stderr)`
 
 --
@@ -530,18 +656,20 @@ If you're not thrilled by learning [all the setuptools/PyPI stuff][pypitut]:
 ---
 ## Being terrific: icing on the CLI cupcake
 
-* programmable completion
-    * Click provides [facilities][cc] for this (Bash only, I think)
+* programmable completion (tab completion for subcommands &amp; options)
+    * Click provides [facilities][cc] for this (Bash shell only)
     * or you can [write your own][manual]
     * look at [these examples][bashcompletion]
 * a user config file where they can specify default behavior
     * _e.g._, `mysql` command line client
 * defaults configurable with environment variables
     * _e.g._, `LESS` environment variable for `less`
+    * Click [bakes this in][clickenv], too
 
 [cc]: https://click.palletsprojects.com/en/7.x/bashcomplete/
 [manual]: https://www.gnu.org/software/bash/manual/html_node/A-Programmable-Completion-Example.html#A-Programmable-Completion-Example
 [bashcompletion]: https://github.com/scop/bash-completion
+[clickenv]: https://click.palletsprojects.com/en/7.x/options/#values-from-environment-variables
 
 ---
 name: nextlevel
@@ -549,21 +677,20 @@ name: nextlevel
 
 * a manual page so that `man yourcommand` works
   * but you don't have to learn [roff][], because there's
-   [ronn](https://github.com/rtomayko/ronn)
+    [ronn][]
 * executable packages
     ```bash
     # e.g.,
     python -m mymodule
     ```
-  * just add a `__main__.py` in the package directory
-  * this can alleviate `PATH` variable woes for users who don't want to mess
-    with that
   * example: `python3 -m http.server` (so memorable!)
+  * this can alleviate `PATH` variable woes for some users
+  * just add a `__main__.py` in your package directory
 
-[roff]: https://linux.die.net/man/7/roff
+[ronn]: https://github.com/rtomayko/ronn
 
 ---
-## Over-9000-Super-Saiyan stuff
+## Level-9000-Super-Saiyan stuff.ast[*]
 
 * an interactive shell
     * MacPorts' `port` command, `mysql`, `python`
@@ -574,10 +701,15 @@ Your Friday-after-lunch, scratch-an-itch project probably isn't going to benefit
 from an interactive shell or
 <abbr title="Interprocess Communcation">IPC</abbr> with a long-running daemon.
 
-<small>However, there _are_ Readline bindings and introspection / autocompletion
+.sm[However, there _are_ Readline bindings and introspection / autocompletion
 libraries for Python ([jedi](https://github.com/davidhalter/jedi) is one that
 comes to mind), so an interactive shell might not be as far off as you
-think.</small>
+think.]
+
+.footnote[
+.ast[*] I didn't actually watch much Dragonball Z, so I hope I got that
+reference right .wink[]
+]
 
 ---
 name: demo
@@ -592,13 +724,15 @@ Only the first page of results, though.
 
 --
 
-<small>Yes, as a matter of fact, there _is_ an [API][entrez].</small>
+.sm[Yes, as a matter of fact, there _is_ an [API][entrez].]
 
 --
 
-<small>Scraping the headline and URL from the web page is a one-liner in
+.sm[
+Scraping the headline and URL from the web page is a one-liner in
 [XPath][xpath], and I didn't want to be unwrapping mountains of JSON for
-a simple demo.</small>
+a simple demo.
+]
 
 [pmfind]: https://github.com/ernstki/terrific-terminal-apps-python/blob/master/pmfind
 [pm]: https://pubmed.ncbi.nlm.nih.gov/
@@ -615,6 +749,54 @@ a simple demo.</small>
 --
 
 * profit!
+
+---
+# See also
+
+* [UNIX: Making Computers Easier To Use](https://www.youtube.com/watch?v=XvDZLjaCJuw) — AT&T Archives film from 1982, Bell Laboratories
+  * really informative, and (to a Unix nerd, anyway) doesn't feel dated
+  * see [this gist](https://gist.github.com/ernstki/1432b3ea843410a4826ce9cb1584d7b5) for a step-by-step recreation of the spellchecker and talking calculator in modern shell script and Python
+* [The Unix Chainsaw][chainsaw] by Gary Bernhardt
+  * very revelatory talk about using Unix pipes and functions to their fullest potential, to encapsulate complexity
+* [Create *beautiful* command-line interfaces with Python][pycon2012]
+  * from PyCon 2012, by the author of [docopt][]
+* [jlevy/the-art-of-command-line](https://github.com/jlevy/the-art-of-command-line)
+  * concise reference for Unix shell (for pros and novices alike)
+
+[pycon2012]: https://www.youtube.com/watch?v=pXhcPJK5cMc
+[docopt]: https://github.com/docopt/docopt
+[chainsaw]: https://www.youtube.com/watch?v=sCZJblyT_XM
+
+---
+# References
+
+1. ["Ten recommendations for creating usable bioinformatics command line software"][tenrec] by Torsten Seemann
+2. ["Ten Essential Development Practices"][dc] by Damian Conway
+3. [argparse][] - from the Python standard library
+  * [official tutorial][aptut]
+4. [Click][] - by [Armin Ronacher](https://github.com/mitsuhiko), and others
+  * [API documentation][clickdoc]
+5. [docopt][] - by [Vladimir Keleshev](https://github.com/keleshev), and others
+  * [try it in a browser][trydocopt]
+
+[tenrec]: https://doi.org/10.1186/2047-217X-2-15
+[dc]: https://www.perl.com/pub/2005/07/14/bestpractices.html/
+[argparse]: https://docs.python.org/3/library/argparse.html
+[aptut]: https://docs.python.org/3/howto/argparse.html
+[click]: https://palletsprojects.com/p/click/
+[clickdoc]: https://click.palletsprojects.com/en/7.x/
+[trydocopt]: http://try.docopt.org/
+
+---
+class: center, middle
+
+# THANKS
+
+for your kind attention!
+
+.footnote[
+these slides are available at<br><https://bit.ly/tttapy>
+]
 
 ---
 class: center, middle
@@ -654,7 +836,7 @@ reading/writing the clipboard from Python programs.
 
 …but, does your Python command-line program _need_ to do that, if there is already a facility for that built in to the OS (macOS)?
 
-Remember, One Thing Well.
+Remember, _One Thing Well_.
 
 [pyper]: https://pypi.org/project/pyperclip/
 
@@ -665,22 +847,22 @@ name: powershell
 In spite of the early "Unixy" pipe-and-filter discussion, the concepts are
 PLENTY applicable for Windows people as well.
 
-`CLIP.EXE` comes with Windows, so this works<span style="color:red">\*</span>
+`CLIP.EXE` comes with Windows, so this works.ast[]
 
 ```dos
 your-program | clip
 ```
 
-Only in the copy-to-clipboard direction, though. If you need to send clipboard text _to_ your program, do this instead<span style="color:red">\*\*</span>
+Only in the copy-to-clipboard direction, though. If you need to send clipboard text _to_ your program, do this instead.ast[*]
 
 ```dos
 powershell -command get-clipboard | your-program-that-reads-stdin
 ```
 
 .footnote[
-<span style="color:red">\*</span> Is that too much typing for you? Create a [DOSKEY macro](https://superuser.com/a/1134468/73744)!
+.ast[] Is that too much typing for you? Create a [DOSKEY macro](https://superuser.com/a/1134468/73744)!
 
-<span style="color:red">\*\*</span>I _think_ this works in the copy <em>to</em> clipboard direction, too?
+.ast[*] I _think_ this works in the copy <em>to</em> clipboard direction, too?
 ]
 
 <!--
@@ -703,7 +885,7 @@ get-clipboard | your-program-that-reads-stdin
 ```
 
 If you want a shortcut for that, you can create a
-[PowerShell function](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_functions)<span style="color:red">\*</span>
+[PowerShell function](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_functions).ast[]
 
 ```powershell
 function pastelong { get-clipboard | your-program }
@@ -713,57 +895,24 @@ PowerShell functions behave about the same as Unix shell functions in that you
 can pipe data into them.
 
 .footnote[
-<span style="color:red">\*</span> and add that to a
+.ast[] and add that to a
 [PowerShell profile](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_profiles),
-which will load up every time you run PowerShell.
+which will load up every time you run PowerShell
 ]
 
 ---
-# See also
+# .rainbow[_BONUS ROUND!_]
 
-* [UNIX: Making Computers Easier To Use](https://www.youtube.com/watch?v=XvDZLjaCJuw) — AT&T Archives film from 1982, Bell Laboratories
-  * really informative, and (to a Unix nerd, anyway) doesn't feel dated
-  * see [this gist](https://gist.github.com/ernstki/1432b3ea843410a4826ce9cb1584d7b5) for a step-by-step recreation of the spellchecker and talking calculator in modern shell script and Python
-* [The Unix Chainsaw][chainsaw] by Gary Bernhardt
-  * very revelatory talk about using Unix pipes and functions to their fullest potential, to encapsulate complexity
-* [Create *beautiful* command-line interfaces with Python][pycon2012]
-  * from PyCon 2012, by the author of [docopt][]
-* [jlevy/the-art-of-command-line](https://github.com/jlevy/the-art-of-command-line)
-* Internet your pipes and pipe the Internet with [`curl`](https://curl.haxx.se)
-    * just look at the protocol support!
+Internet your pipes and pipe the Internet with [`curl`][curl]&nbsp;
+--
+…just _look_ at that [protocol support][curlfeat]!.ast[]
 
-[pycon2012]: https://www.youtube.com/watch?v=pXhcPJK5cMc
-[docopt]: https://github.com/docopt/docopt
-[chainsaw]: https://www.youtube.com/watch?v=sCZJblyT_XM
+--
 
----
-# .rainbow[BONUS ROUND!]
+HTTP—the URL _is_ the user interface:
 
-Tools for working with Internet data sources:
+--
 
-* [`xmlstarlet`](http://xmlstar.sourceforge.net)
-    ```bash
-    alias xml='xmlstarlet'  # much more convenient
-    ```
-* [`xidel`](http://www.videlibri.de/xidel.html)<span style="color:red">\*</span>
-    ```bash
-    curl -s "$URL" | xidel - -e '//p[contains(.,"MD5")]'
-    ```
-* [`pup`](https://github.com/ericchiang/pup)
-    * see [issue #123](https://github.com/ericchiang/pup/issues/123) if it crashes on startup
-
-.footnote[
-<span style="color:red">\*</span> my personal favorite, does what it says on the tin, no fuss
-]
-
----
-# .rainbow[BONUS ROUND, PART DEUX!]
-
-* [`hxselect`](https://www.w3.org/Tools/HTML-XML-utils/) - "HTML and XML select"
-* [`jq`](https://stedolan.github.io/jq/) - a command-line JSON processor
-  * [helpful cheatsheet](https://gist.github.com/olih/f7437fb6962fb3ee9fe95bda8d2c8fa4)
-
-The URL _is_ the interface:
 * <http://cheat.sh>
   ```bash
   curl -s cheat.sh/python/loops | less -R
@@ -773,32 +922,94 @@ The URL _is_ the interface:
   curl -s wttr.in/honolulu | less -R
   ```
 
+.footnote[
+.ast[] and the guy who made it [is still alive][til]!
+]
+
+[curl]: https://curl.haxx.se
+[curlfeat]: https://curl.haxx.se/docs/features.html
+[til]: https://twitter.com/changelog/status/1201889518661591040
+
 ---
-# References
+# .rainbow[_BONUS ROUND, PART DEUX!_]
 
-1. ["Ten recommendations for creating usable bioinformatics command line software"][tenrec] by Torsten Seemann
-2. ["Ten Essential Development Practices"][dc] by Damian Conway
-3. [argparse][] - from the Python standard library
-  * [official tutorial][aptut]
-4. [Click][] - by [Armin Ronacher](https://github.com/mitsuhiko), and others
-  * [API documentation][clickdoc]
-5. [docopt][] - by [Vladimir Keleshev](https://github.com/keleshev), and others
-  * [try it in a browser][trydocopt]
+Select content from HTML/XML data using [XPath][xpath]:
 
-[tenrec]: https://doi.org/10.1186/2047-217X-2-15
-[dc]: https://www.perl.com/pub/2005/07/14/bestpractices.html/
-[argparse]: https://docs.python.org/3/library/argparse.html
-[aptut]: https://docs.python.org/3/howto/argparse.html
-[click]: https://palletsprojects.com/p/click/
-[clickdoc]: https://click.palletsprojects.com/en/7.x/
-[trydocopt]: http://try.docopt.org/
+* [`xmlstarlet`](http://xmlstar.sourceforge.net)
+    ```bash
+    alias xml='xmlstarlet'  # much more convenient
+    curl -s "$WIKIPEDIA/api.php?action=feedrecentchanges" \
+      | xml sel -t -v //title -n
+    ```
+* [`xidel`](http://www.videlibri.de/xidel.html).ast[]
+    ```bash
+    # get a list of Debian HTTP mirror sites
+    curl -sL https://www.debian.org/CD/http-ftp \
+      | xidel - -e '//li/a[text()="HTTP"]/@href'
+    ```
+
+.footnote[
+.ast[] my personal favorite; deals with HTML that is not well-formed XML, no fuss
+]
+
+---
+
+# .rainbow[_BONUS ROUND, PART TROIS!_]
+
+Rather use CSS selectors?
+
+* [`pup`](https://github.com/ericchiang/pup)
+    ```bash
+    curl -s $WIKIPEDIA/List_of_The_Simpsons_characters \
+      | pup -c 'table.sortable td:first-of-type a text{}'
+    ```
+  * can also clean up and colorize messy HTML
+  * see [issue #123](https://github.com/ericchiang/pup/issues/123) if it
+    crashes on startup
+* `hxselect`, `hxextract` 
+  * part of a [whole suite of tools][hxutils] for XML/HTML transformation
+  * `hxselect` &rarr; elements matching a CSS(3) selector
+  * `hxextract` &rarr; elements with a specific name or class
+
+[hxutils]: https://www.w3.org/Tools/HTML-XML-utils/
+
+---
+
+# .rainbow[_BONUS ROUND, PART QUATRE!_]
+
+Oh, it's a JSON API you say?
+
+* [`jq`](https://stedolan.github.io/jq/) - a command-line JSON processor
+  * online version at <https://jqplay.org/>
+  * [helpful cheatsheet](https://gist.github.com/olih/f7437fb6962fb3ee9fe95bda8d2c8fa4)
+
+---
+# .rainbow[_NOW BRING IT ON HOME_]
+
+Having a variety of tools that read/write text streams and do "one thing well"
+allows you to play each to their strengths:
+
+```bash
+# tab-delimited list of (unofficial) web pages of OH state parks
+curl -s https://www.stateparks.com/oh.html \
+  | pup 'div#parklink a json{}' \
+  | jq -r '.[] | .href, .title' \
+  | paste - -
+```
+
+* `curl` - fetches web pages
+* `pup` - gets links from `<div id="parklink">` as JSON
+* `jq` - extracts JSON properties, prints newline-delimited
+* [`paste`][paste] - spreads lines across columns, tab-delimited
+
+[paste]: https://linux.die.net/man/1/paste
 
 ---
 class: center, middle
 
-# THANKS
+# <BIG>THANKS AGAIN</BIG>
 
-for your kind attention!
+for sticking around until the end!
 
 .footnote[
 these slides are available at<br><https://bit.ly/tttapy>
@@ -807,7 +1018,7 @@ these slides are available at<br><https://bit.ly/tttapy>
 ---
 class: center, middle
 
-<small>here's a cute kitten</small>
+.sm[for your efforts, here's a cute kitten]
 
 ![a cute kitten](img/kitten.jpg)
 

@@ -18,12 +18,22 @@ kbd {
 	vertical-align: baseline;
 }
 sup {
-  line-height: 80%;
+  line-height: 100%;
 }
 p {
 	font-size: 1.5em;
-	line-height: 110%;
+	line-height: 115%;
 }
+
+p + ul {
+  margin-top: -0.5em;
+}
+
+/* FIXME: I don't understand ems vs. rems */
+.sm, .sm p {
+  font-size: 1.5rem;
+}
+
 li {
 	font-size: 1.8rem;
 	line-height: 110%;
@@ -41,7 +51,7 @@ li ul {
 }
 
 li .remark-inline-code, p .remark-inline-code {
-  font-size: 1.0em;
+  font-size: 0.95em;
   display: inline-block;
   padding: 0.05em 0.3em 0.1em;
   margin: 0.05em;
@@ -58,7 +68,7 @@ li .remark-code {
 }
 
 li ul li {
-	font-size: 0.8em;
+	font-size: 0.9em;
 }
 
 blockquote {
@@ -95,17 +105,49 @@ tt, .remark-code, .remark-inline-code {
 	font-family: 'Ubuntu Mono';
 }
 
+/* https://stackoverflow.com/a/501696 */
+.fn {
+  vertical-align: super;
+  font-size: 80%;
+}
+
+.ast{
+  color: firebrick;
+}
+.ast::after {
+  content: '*';
+}
+
+.g, .s, .wink {
+  font-family: monospace;
+}
+
+.g::after {
+  content: ':D';
+}
+
+.s::after {
+  content: ':)';
+}
+
+.wink::after {
+  content: ';)';
+}
+
+.rant {
+  /* background-color: rgba(179,47,35,0.2); */
+}
 .rant::before {
   content: '<rant>';
   font-family: 'Ubuntu Mono';
-  color:red;
+  color:firebrick;
   padding-right: 0.2em;
 }
 
 .rant::after {
   content: '</rant>';
   font-family: 'Ubuntu Mono';
-  color:red;
+  color:firebrick;
   padding-left: 0.2em;
 }
 
