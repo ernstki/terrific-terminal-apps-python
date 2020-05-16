@@ -109,6 +109,7 @@ tt, .remark-code, .remark-inline-code {
 .fn {
   vertical-align: super;
   font-size: 80%;
+  line-height: 90%;
 }
 
 .ast{

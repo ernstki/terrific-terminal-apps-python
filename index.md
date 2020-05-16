@@ -57,7 +57,8 @@ Text licensed under a <a rel="license" href="http://creativecommons.org/licenses
 
 ## Unix philosophy
 
-Credited [Doug McIlroy](https://en.wikipedia.org/wiki/Douglas_McIlroy) (who came up with Unix pipelines).fn[1], the Unix philsophy is summed up:
+Credited to [Doug McIlroy](https://en.wikipedia.org/wiki/Douglas_McIlroy) (who
+came up with Unix pipelines).fn[1], the Unix philsophy is summed up:
 
 --
 
@@ -73,10 +74,15 @@ Credited [Doug McIlroy](https://en.wikipedia.org/wiki/Douglas_McIlroy) (who came
 
 --
 
-Other Unix strengths:
+<!-- yes, some things about Unix are well designed, but part of the reason for
+     its success is it simply out-competed other OSes; it was "survial of the
+     fittest" in the sense of Unix being the most adaptable (portable) to new
+     hardware platforms, which is why today there's Unix in your TV, fridge,
+     and watch -->
+Due to its longevity and standardization, Unix also has
 
-* documentation is excellent, and has a standard format
-* program options have a standard format.fn[2]
+* a well-structured, comprehensive, built-in manual
+* codified standards for how programs look and behave.fn[2]
 
 .footnote[
 .fn[1] <https://en.wikipedia.org/wiki/Unix_philosophy>
