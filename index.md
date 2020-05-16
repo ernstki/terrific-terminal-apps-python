@@ -35,13 +35,13 @@ Text licensed under a <a rel="license" href="http://creativecommons.org/licenses
     * Click
     * docopt
 --
-* [next-level stuff](#nextlevel)
+* [next-level stuff](#next-level)
 
 --
-* [other useful resources]
+* [other useful resources](#see-also)
 
 --
-* [stuff I refered to when making this]
+* [stuff I refered to when making this](#references)
 
 ---
 ## All on the same page?
@@ -672,7 +672,7 @@ If you're not thrilled by learning [all the setuptools/PyPI stuff][pypitut]:
 [clickenv]: https://click.palletsprojects.com/en/7.x/options/#values-from-environment-variables
 
 ---
-name: nextlevel
+name: next-level
 ## Next-level stuff
 
 * a manual page so that `man yourcommand` works
@@ -751,6 +751,7 @@ a simple demo.
 * profit!
 
 ---
+name: see-also
 # See also
 
 * [UNIX: Making Computers Easier To Use](https://www.youtube.com/watch?v=XvDZLjaCJuw) — AT&T Archives film from 1982, Bell Laboratories
@@ -768,6 +769,7 @@ a simple demo.
 [chainsaw]: https://www.youtube.com/watch?v=sCZJblyT_XM
 
 ---
+name: references
 # References
 
 1. ["Ten recommendations for creating usable bioinformatics command line software"][tenrec] by Torsten Seemann
