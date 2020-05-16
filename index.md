@@ -41,7 +41,7 @@ Text licensed under a <a rel="license" href="http://creativecommons.org/licenses
 * [other useful resources](#see-also)
 
 --
-* [stuff I refered to when making this](#references)
+* [stuff I referred to when making this](#references)
 
 ---
 ## All on the same page?
