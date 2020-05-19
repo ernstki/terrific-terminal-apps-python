@@ -590,7 +590,7 @@ If you're not thrilled by learning [all the setuptools/PyPI stuff][pypitut]:
 * `curl $INSTALLSCRIPT | bash`
 --
 
-  * not everyone's thrilled by _this_ either
+  * not everyone's thrilled by _this_ either (security implications)
 --
 
 * include a good old-fashioned Makefile
@@ -701,7 +701,7 @@ name: next-level
 [ronn]: https://github.com/rtomayko/ronn
 
 ---
-## Level-9000-Super-Saiyan stuff.ast[*]
+## Level-9000-Super-Saiyan stuff.ast[]
 
 * an interactive shell
     * MacPorts' `port` command, `mysql`, `python`
@@ -718,7 +718,7 @@ comes to mind), so an interactive shell might not be as far off as you
 think.]
 
 .footnote[
-.ast[*] I didn't actually watch much Dragonball Z, so I hope I got that
+.ast[] I didn't actually watch much Dragonball Z, so I hope I got that
 reference right .wink[]
 ]
 
@@ -728,7 +728,8 @@ name: demo
 
 ### [`pmfind`][pmfind]
 
-Scrapes the titles and URLs of research papers matching user-provided search terms from <abbr title="National Center for Biotechnology Information">NCBI</abbr>'s
+Scrapes the titles and URLs of research papers matching user-provided search
+terms from <abbr title="National Center for Biotechnology Information">NCBI</abbr>'s
 [PubMed][pm] index.
 
 Only the first page of results, though.
