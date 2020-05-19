@@ -200,7 +200,7 @@ groff -man <(zcat $(man -w ls)) | ps2pdf - ls.pdf
 ---
 ## Pipe-and-filter programming
 
-Another innovation of Unix.ast[] is the notion of program input/output **flowing in "streams"**
+Another innovation of Unix is the notion of program input/output **flowing in "streams"**
 
 --
 * …and being transformed by intermediate "filter" programs
@@ -221,14 +221,18 @@ Because plain text is used as the medium:
 
 --
 
-* commands are composable (you can plug them together)
+* commands are composable (you can plug them together).fn[1]
 
 --
 * …and it's possible to build and inspect pipelines step-wise
 
+--
+
 .footnote[
-.ast[] (if not _strictly_ a Bell Labs invention)
+.fn[1] Gary Bernhardt's "[The Unix Chainsaw][chainsaw]" talk really clinches this notion of composability
 ]
+
+[chainsaw]: https://www.youtube.com/watch?v=sCZJblyT_XM
 
 ---
 ## Pipe-and-filter programming (cont'd)
@@ -275,10 +279,10 @@ The default destination (for both) is **the user's screen**
 --
 
 * but each stream can be re-routed _independently_
-  * with these operators: `> filename` or `| otherprogram`
+  * with operators like `2> logfile` and `| otherprogram`
 
 .sm[This means you can handle errors (_e.g._, write them to a log file)
-separately from the processing of data, which passes to the next
+separately from data, which passes through to the next
 program in a pipeline.] 
 
 .footnote[
@@ -320,13 +324,14 @@ class: center, middle
 background-color: black
 
 .white[
-Bell Labs' [Lorinda Cherry][lc] explains Unix pipes (@[13:20][tcalc])
+Bell Labs' [Brian Kernighan][bk] and [Lorinda Cherry][lc]
+<br>explain Unix pipes (@[13:20][tcalc])
 ]
 
 <iframe width="640" height="400" src="https://www.youtube-nocookie.com/embed/XvDZLjaCJuw?start=800" frameborder="0" allow="accelerometer; no-autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-.white[.sm[See also: [Brian Kernighan's][lc] spellchecker demo at
-[5:15][spellcheck],<br>and [this gist][tcgist] recreating them both with modern
+.white[.sm[See also: Kernighan's spellchecker demo at
+[5:15][spellcheck], and<br>[this gist][tcgist] recreating them both with modern
 Bash and Python.]]
 
 [bk]: https://en.wikipedia.org/wiki/Brian_Kernighan
@@ -363,7 +368,7 @@ curl -sL https://www.python.org/downloads \
 .footnote[
 .ast[] On Mac, use [MacPorts](https://macports.org)
 or [Homebrew](https://brew.sh) to get GNU sed, or replace `\n` with a literal
-newlie
+newline
 ]
 
 ---
@@ -772,7 +777,6 @@ name: see-also
 
 [pycon2012]: https://www.youtube.com/watch?v=pXhcPJK5cMc
 [docopt]: https://github.com/docopt/docopt
-[chainsaw]: https://www.youtube.com/watch?v=sCZJblyT_XM
 
 ---
 name: references
