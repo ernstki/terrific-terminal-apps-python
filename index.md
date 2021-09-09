@@ -1006,7 +1006,7 @@ allows you to play each to their strengths:
 # tab-delimited list of (unofficial) web pages of OH state parks
 curl -s https://www.stateparks.com/oh.html \
   | pup 'div#parklink a json{}' \
-  | jq -r '.[] | .href, .title' \
+  | jq -r '.[] | "https://www.stateparks.com/" + .href, .title' \
   | paste - -
 ```
 
