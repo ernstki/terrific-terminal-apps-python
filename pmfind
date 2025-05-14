@@ -47,6 +47,10 @@ def main():
     opts = parser.parse_args()
     results = pubmed_query(opts.terms)
 
+    if not results:
+        print("No results. :-(", file=sys.stderr)
+        sys.exit(1)
+
     for result in results:
         print('\t'.join(result))
 
