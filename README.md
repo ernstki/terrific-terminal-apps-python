@@ -1,6 +1,6 @@
 # Truly Terrific Terminal Apps (in Python)
 
-[Slides](index.html)
+[Slides](https://ernstki.github.io/terrific-terminal-apps-python)
 
 ## Credits
 
