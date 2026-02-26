@@ -23,41 +23,46 @@ pmfind-docopt.py
     Search NCBI PubMed for given TERM(s), return a list of URLs and titles
 
 Usage:
-    pmfind-docopt.py [options] [(-i|--infile=FILE) | TERM...]
+    pmfind-docopt.py [options] TERM...
 
 Options:
     -h --help                shows this help
-    -s SEP, --separator=SEP  separator for output records [default: tab]
-    -i FILE, --infile=FILE   read search terms from input file [default: stdin]
 
 Problems?
     Please report bugs at https://bit.ly/tttapyc
 """
 
-import os
-import sys
-import docopt
+# try:
+#Usage:
+#    pmfind-docopt.py [options] (-i|--infile=FILE)
+#Options:
+#    -s SEP, --separator=SEP  separator for output records [default: tab]
+#    -i FILE, --infile=FILE   read search terms from input file [default: stdin]
 
-from pmlib import *
+import os, sys
+import docopt
+from pmlib import pubmed_query
 
 VERSION = 0.1
-
 
 def main():
     opts = docopt.docopt(__doc__, version=VERSION)
 
-    if opts['--separator'] == 'tab':
-        opts['--separator'] = '\t'
+    #if opts['--separator'] == 'tab':
+    #    opts['--separator'] = '\t'
 
-    if not opts['TERM'] and not opts['--infile']:
-        for line in sys.stdin:
-            opts['TERM'].append(line.strip())
+    #if not opts['TERM'] and not opts['--infile']:
+    #    for line in sys.stdin:
+    #        opts['TERM'].append(line.strip())
 
     results = pubmed_query(opts['TERM'])
 
+    if not results:
+        print("No results. :-(", file=sys.stderr)
+        sys.exit(1)
+
     for result in results:
         print(opts['--separator'].join(result))
-
 
 if __name__ == '__main__':
     try:
