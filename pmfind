@@ -19,6 +19,8 @@ Date:   14 May 2020
 import sys
 from pmlib import pubmed_query
 
+VERSION = '0.1'
+
 def main():
     """
     Searh NCBI PubMed (https://www.ncbi.nlm.nih.gov/pubmed) for given TERM(s)
@@ -47,9 +49,9 @@ def main():
     opts = parser.parse_args()
     results = pubmed_query(opts.terms)
 
-    if not results:
-        print("No results. :-(", file=sys.stderr)
-        sys.exit(1)
+    #if not results:
+    #    print("No results. :-(") #, file=sys.stderr)
+    #    sys.exit(1)
 
     for result in results:
         print('\t'.join(result))

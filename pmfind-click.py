@@ -20,7 +20,7 @@ import sys
 import click
 from pmlib import pubmed_query
 
-VERSION = 0.1
+VERSION = '0.1'
 
 @click.command()
 @click.argument('terms', metavar='TERM', nargs=-1, required=True)

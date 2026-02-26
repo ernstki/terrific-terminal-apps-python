@@ -43,7 +43,7 @@ import os, sys
 import docopt
 from pmlib import pubmed_query
 
-VERSION = 0.1
+VERSION = '0.1'
 
 def main():
     opts = docopt.docopt(__doc__, version=VERSION)

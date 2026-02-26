@@ -9,6 +9,7 @@ class: center, middle
 <!--small>"User-friendly" and "command line application"<br>
 aren't necessarily mutually exclusive.</small-->
 
+<!-- tinyurl.com versions work, too -->
 <small>[bit.ly/tttapy](https://bit.ly/tttapy) &bull; [bit.ly/tttapyc](https://bit.ly/tttapyc)</small>
 
 .footnote[
@@ -19,21 +20,23 @@ Text licensed under a <a rel="license" href="http://creativecommons.org/licenses
 ---
 ## What's about to happen
 
-* philosophizing
+* some background info
 
 --
-* hashing out what makes a good <abbr title="comand-line interface">CLI</abbr>
-
+    * what is meant by a "command line" interface?
 --
-    * using _science!_
+    * Unix, standard streams, man pages
 --
-* [some dos and don'ts](#being-terrific)
+    * [what makes a _good_ CLI?](#being-terrific)
+--
+* [some dos and don'ts](#dos-and-donts)
 
 --
 * [practical demonstration](#demo)
-    * argparse
-    * Click
-    * docopt
+
+--
+* [why bother with _any_ of this?](#muffins)
+
 --
 * [next-level stuff](#next-level)
 
@@ -41,17 +44,38 @@ Text licensed under a <a rel="license" href="http://creativecommons.org/licenses
 * [other useful resources](#see-also)
 
 --
-* [stuff I referred to when making this](#references)
+*  [references I used](#references)
 
 ---
-## All on the same page?
+## Pre-quiz
 
-* "Unix"
-  * Mac is a Unix (actually more so than Linux)
+Terms:
+* "[Unix](https://en.wikipedia.org/wiki/Unix-like)".fn[1]
+
+--
 * "pipe"
-* `$PATH`
-* experience with argparse, docopt, and Click?
+
+--
+* "search path" or `%PATH%` or `$PATH`
+
+--
+
+Have you:
+
+* had experience with [argparse][], [docopt][], and [Click][]?
+
+--
 * ever written a command-line utility to scratch an itch?
+
+--
+* ever written a non-trivial Bash script?
+
+--
+* ever written a non-trivial PowerShell script?
+
+.footnote[
+.fn[1] Mac is a Unix, too — possibly _more_ so in the UNIX™ sense than Linux.
+]
 
 ---
 
@@ -347,7 +371,7 @@ Bash and Python.]]
 # print Python versions and end-of-support dates from
 # https://www.python.org/downloads as a formatted table:
 
-curl -sL https://www.python.org/downloads \
+curl --compressed -sL https://www.python.org/downloads \
   | xidel - -s -e '//(span[@class="release-version"],
                       span[@class="release-end"])' \
   | paste - - \
@@ -403,6 +427,7 @@ newline
 [regex]: https://linux.die.net/man/7/regex
 
 ---
+name: being-terrific
 ## The science of being terrific
 
 From "Ten recommendations for creating usable bioinformatics command line software".fn[1]
@@ -476,7 +501,7 @@ java -weirdJVMopts -Xmx1G -c /class/path -jar jarfile.jar
 them.]
 
 ---
-name: being-terrific
+name: dos-and-donts
 ## Being terrific: act like a built-in
 
 There is no reason to make users do this (even on Windows)
@@ -683,6 +708,191 @@ If you're not thrilled by learning [all the setuptools/PyPI stuff][pypitut]:
 [clickenv]: https://click.palletsprojects.com/en/7.x/options/#values-from-environment-variables
 
 ---
+name: demo
+## Practical demo
+
+### [`pmfind`][pmfind]
+
+Scrapes the titles and URLs of research papers matching user-provided search
+terms from <abbr title="National Center for Biotechnology Information">NCBI</abbr>'s
+[PubMed][pm] index.
+
+Only the first page of results, though.
+
+--
+
+.sm[Yes, as a matter of fact, there _is_ an [API][entrez].]
+
+--
+
+.sm[
+Scraping the headline and URL from the web page is a one-liner in
+[XPath][xpath], and I didn't want to be unwrapping mountains of JSON for
+a simple demo.
+]
+
+[pmfind]: https://github.com/ernstki/terrific-terminal-apps-python/blob/master/pmfind
+[pm]: https://pubmed.ncbi.nlm.nih.gov/
+[entrez]: https://www.ncbi.nlm.nih.gov/books/NBK25500/
+[xpath]: https://www.w3.org/TR/xpath/all/
+
+---
+## `pmfind` — is it _terrific_ though?
+
+How many of the [Ten Recommendations](#being-terrific) do we satisfy now?
+
+1. print something if no parameters are supplied
+--
+ .check[]
+
+--
+1. have a `-h` or `--help` switch
+--
+ .check[]
+
+--
+1. have a `-v` or `--version` switch
+--
+ .ex[]
+
+--
+
+Let's fix that!
+
+---
+## `pmfind` — is it _terrific_ though?
+
+How many of the [Ten Recommendations](#being-terrific) do we satisfy now?
+
+1. print something if no parameters are supplied .check[]
+1. have a `-h` or `--help` switch .check[]
+1. have a `-v` or `--version` switch .check[]
+
+--
+1. validate your parameters
+--
+ .check[]
+
+--
+1. always raise an error if something goes wrong
+--
+ .ex[]
+
+Oops!
+
+When there are no matches, the user has no indication of why. Let's fix that.
+
+---
+## `pmfind` — is it _terrific_ though?
+
+How many of the [Ten Recommendations](#being-terrific) do we satisfy now?
+
+1. print something if no parameters are supplied .check[]
+1. have a `-h` or `--help` switch .check[]
+1. have a `-v` or `--version` switch .check[]
+1. validate your parameters .check[]
+1. always raise an error if something goes wrong .check[]
+
+--
+1. do not use stdout for messages and errors
+--
+ .ex[]
+
+The error printed when there are no matches goes to stdout. Let's fix that.
+
+---
+## `pmfind` — is it _terrific_ though?
+
+How many of the [Ten Recommendations](#being-terrific) do we satisfy now?
+
+1. print something if no parameters are supplied .check[]
+1. have a `-h` or `--help` switch .check[]
+1. have a `-v` or `--version` switch .check[]
+1. validate your parameters .check[]
+1. always raise an error if something goes wrong .check[]
+1. do not use stdout for messages and errors .check[]
+
+--
+1. check that your dependencies are installed
+--
+ .ex[]
+
+Doh!
+
+---
+## `pmfind` — is it _terrific_ though?
+
+How many of the [Ten Recommendations](#being-terrific) do we satisfy now?
+
+1. print something if no parameters are supplied .check[]
+1. have a `-h` or `--help` switch .check[]
+1. have a `-v` or `--version` switch .check[]
+1. validate your parameters .check[]
+1. always raise an error if something goes wrong .check[]
+1. do not use stdout for messages and errors .check[]
+1. check that your dependencies are installed .check[]
+
+--
+1. don't hard-code any paths
+
+--
+1. don't pollute the `$PATH`
+
+--
+1. don't distribute bare JAR (_Java ARchive_) files
+
+---
+name: muffins
+## Why bother?
+
+Some LLM model or agentic coding system can churn out CLIs _for_ you, while you sleep, right?
+
+---
+### Vending machine banana muffins: an analogy
+<div style="float:right;margin-left:1em">
+  <img src="img/nutrition.png">
+</div>
+
+<div style="">
+  <img style="max-width:14em" alt="a vending machine muffin" src="img/muffin.jpg">
+</div>
+
+<div style="font-size:1.2rem;line-height:100%">
+<strong>Ingredients:</strong>
+Enriched Bleached Flour (Wheat Flour, Niacin, Iron, Thiamine Mononitrate,
+Riboflavin, Folic Acid), Sugar, Soybean Oil, Water,
+<span style="border-radius:1em/1em 0.1em;display:inline-block;padding:0 0.5em;background:rgba(255,215,0,0.5);margin-left:-0.5em">Bananas,</span> Eggs, Brown Sugar,
+Walnuts, Contains 2% Or Less Of: Modified Food Starch, Invert Sugar, Glycerin,
+Sodium Aluminum Phosphate, Baking Soda, Monocalcium Phosphate, Mono and
+Diglycerides, Sodium Stearoyl Lactylate, Polysorbate 60, Whey, Salt, Wheat
+Gluten, Skim Milk, Soy Flour, Potassium Sorbate and Sorbic Acid
+(Preservatives), Guar Gum, Xanthan Gum, Natural And Artificial Flavors.
+</div>
+
+---
+### Why bother? (cont'd)
+
+There's still room for personal preference, taste, and love of craft in these
+modern times.
+
+--
+
+If you _like_ making muffins, make muffins.
+
+---
+name: future
+## `pmfind`: next steps
+
+* allow reading from an input file (`--i` / `--input`)
+* allow specifying an alternate delimiter (`-s` / `--sep`)
+* `setup.py` with an `entry_point`
+  * so that an executable is automatically created in the user's `PATH`
+  * [add a man page](https://stackoverflow.com/questions/20003329/install-python-package-man-pages-with-pip)!
+--
+
+* profit!
+
+---
 name: next-level
 ## Next-level stuff
 
@@ -723,51 +933,11 @@ reference right .wink[]
 ]
 
 ---
-name: demo
-## Practical demo
-
-### [`pmfind`][pmfind]
-
-Scrapes the titles and URLs of research papers matching user-provided search
-terms from <abbr title="National Center for Biotechnology Information">NCBI</abbr>'s
-[PubMed][pm] index.
-
-Only the first page of results, though.
-
---
-
-.sm[Yes, as a matter of fact, there _is_ an [API][entrez].]
-
---
-
-.sm[
-Scraping the headline and URL from the web page is a one-liner in
-[XPath][xpath], and I didn't want to be unwrapping mountains of JSON for
-a simple demo.
-]
-
-[pmfind]: https://github.com/ernstki/terrific-terminal-apps-python/blob/master/pmfind
-[pm]: https://pubmed.ncbi.nlm.nih.gov/
-[entrez]: https://www.ncbi.nlm.nih.gov/books/NBK25500/
-[xpath]: https://www.w3.org/TR/xpath/all/
-
----
-## `pmfind`: next steps
-
-* allow reading from an input file (`--i` / `--input`)
-* allow specifying an alternate delimiter (`-s` / `--sep`)
-* `setup.py` with an `entry_point`
-  * so that an executable is automatically created in the user's `PATH`
---
-
-* profit!
-
----
 name: see-also
 # See also
 
 * [UNIX: Making Computers Easier To Use](https://www.youtube.com/watch?v=XvDZLjaCJuw) — AT&T Archives film from 1982, Bell Laboratories
-  * really informative, and (to a Unix nerd, anyway) doesn't feel dated
+  * doesn't feel too dated because pipes are still important!
   * see [this gist](https://gist.github.com/ernstki/1432b3ea843410a4826ce9cb1584d7b5) for a step-by-step recreation of the spellchecker and talking calculator in modern shell script and Python
 * [The Unix Chainsaw][chainsaw] by Gary Bernhardt
   * very revelatory talk about using Unix pipes and functions to their fullest potential, to encapsulate complexity

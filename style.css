@@ -34,6 +34,10 @@ p + ul {
   font-size: 1.5rem;
 }
 
+ol li {
+  padding-left: 0.3em;
+}
+
 li {
 	font-size: 1.8rem;
 	line-height: 110%;
@@ -179,6 +183,37 @@ tt, .remark-code, .remark-inline-code {
 
 .manpage {
   font-size: 0.9em;
+}
+
+.checklist {
+  & li {
+    list-style-type: none;
+  }
+  & ul {
+    padding-left: 0;
+  }
+  & input[type="checkbox"] {
+    margin-right: 1em;
+    height: 2em;
+    width: 2em;
+  }
+}
+
+.check, .ex {
+  margin: 0 1em;
+  font-weight: bold
+}
+.check {
+  color: green;
+  &:before {
+    content: "✓"
+  }
+}
+.ex {
+  color: red;
+  &:before {
+    content: "✗"
+  }
 }
 
 .footnote {
