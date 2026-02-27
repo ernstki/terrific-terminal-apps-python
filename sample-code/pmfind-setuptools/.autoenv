@@ -1,0 +1,2 @@
+test -r $AUTOENV_CUR_DIR/venv/bin/activate &&
+source $AUTOENV_CUR_DIR/venv/bin/activate

@@ -731,7 +731,7 @@ Scraping the headline and URL from the web page is a one-liner in
 a simple demo.
 ]
 
-[pmfind]: https://github.com/ernstki/terrific-terminal-apps-python/blob/master/pmfind
+[pmfind]: https://github.com/ernstki/terrific-terminal-apps-python/blob/master/sample-code/pmfind
 [pm]: https://pubmed.ncbi.nlm.nih.gov/
 [entrez]: https://www.ncbi.nlm.nih.gov/books/NBK25500/
 [xpath]: https://www.w3.org/TR/xpath/all/
