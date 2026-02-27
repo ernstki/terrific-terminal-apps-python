@@ -45,6 +45,14 @@ of this**. Everything Just Works™, since:
 …thus `~/.local/man` and `~/.local/share/man` are added to `MANPATH`
 automatically.
 
+On macOS, the `MANPATH` is also updated automatically, but you'll need to add
+the Python `bin` path to your `PATH`:
+
+    # macOS only! update '3.XX' to the appropriate Python major/minor version
+    # in your ~/.profile, if you have one, or ~/.bash_profile for Bash
+    export PATH=$PATH:"$HOME"/Library/Python/3.XX/bin
+
+
 On other platforms, it's not too hard to update `MANPATH` in your login
 scripts:
 
