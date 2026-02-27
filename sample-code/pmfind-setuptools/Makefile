@@ -17,6 +17,8 @@ install: $(BIN)  # install pmfind and dependencies into a virtualenv
 $(BIN): $(VENVACTIVATE)
 	. $(VENVACTIVATE) && \
 	pip install -e .[dev]
+	# trick Make into believing the console entry point was updated
+	touch $(BIN)
 
 
 .PHONY: man
@@ -27,12 +29,16 @@ man: $(MANPAGE)  # build the man page for pmfind
 #
 # see https://github.com/click-contrib/click-man/issues/72 for an explanation
 # of the `--man-version` switch, which is currently needed to avoid an error
+#
+# also see https://github.com/click-contrib/click-man/pull/74 which fixes the
+# docstring indentation problem
 $(MANPAGE): $(VENVACTIVATE) $(BIN)
 	. $(VENVACTIVATE) && \
 	click-man --man-version=$(VERSION) $(PROGRAMNAME)
 
 viewman: $(MANPAGE)  # view the generated manpage (requires 'groff')
-	groff -Tutf8 -man -rLL=$$(tput cols)n $(MANPAGE) | less
+	groff -Tutf8 -man -rLL=$$(tput cols)n $(MANPAGE) \
+	  | less --quit-if-one-screen
 
 venv: $(VENVACTIVATE)  # create a virtualenv
 $(VENVACTIVATE):
