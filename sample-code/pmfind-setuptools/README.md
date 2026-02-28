@@ -45,22 +45,29 @@ of this**. Everything Just Works™, since:
 …thus `~/.local/man` and `~/.local/share/man` are added to `MANPATH`
 automatically.
 
-On macOS, the `MANPATH` is also updated automatically, but you'll need to add
-the Python `bin` path to your `PATH`:
+On recent versions of macOS, the `MANPATH` is also updated automatically, but
+you probably won't have much help adding the user-specific Python `bin` path,
+which is where `pip --user` installs executable scripts like `pmfind`.
 
-    # macOS only! update '3.XX' to the appropriate Python major/minor version
-    # in your ~/.profile, if you have one, or ~/.bash_profile for Bash
-    export PATH=$PATH:"$HOME"/Library/Python/3.XX/bin
+Assuming your desired `python` has already been added to the systemwide search
+path ([by][pydownload] [whatever][pymacports] [means][pybrew]), here is an
+example `.zshenv` that should work on macOS:
 
+    # in your ~/.zshenv
+    # desired 'python' needs to be first in your search path for this to work!
+    pyver=$(python -c 'from sys import version_info as v; print("%s.%s"%(v.major, v.minor))')
+    export PATH="$PATH:$HOME/Library/Python/$pyver/bin"
 
-On other platforms, it's not too hard to update `MANPATH` in your login
-scripts:
+In case you find that `MANPATH` _isn't_ being updated for you automatically,
+perhaps on older platforms, that's not too hard to fix manually:
 
-    # in your ~/.profile, if you have one, or ~/.bash_profile for Bash
-    export MANPATH=$MANPATH:$HOME/.local/man:$HOME/.local/share/man
+    # in your ~/.zshenv, ~/.zshprofile, .profile, or .bash_profile
+    export MANPATH="$MANPATH:$HOME/.local/man:$HOME/.local/share/man"
 
 Read [man(1)][man1] and [manpath(5)][manpath5] (if it exists on your
-platform) for more details.
+platform) for more details. See [here][bashlogin]
+([archive][bashloginarchive])for an explanation of Bash login scripts, and
+[here][zshlogin] for Z shell.
 
 
 See also
@@ -90,8 +97,14 @@ References
 [roff]: https://en.wikipedia.org/wiki/Roff_(software)
 [stman]: https://setuptools.pypa.io/en/latest/references/keywords.html#manpages
 [manpath]: https://man7.org/linux/man-pages/man5/manpath.5.html
+[pydownload]: https://www.python.org/downloads/macos/
+[pymacports]: https://ports.macports.org/search/?q=python&name=on
+[pybrew]: https://formulae.brew.sh/formula/python@3.14
 [man1]: https://www.man7.org/linux/man-pages/man1/man.1.html
 [manpath5]: https://man7.org/linux/man-pages/man5/manpath.5.html
+[bashlogin]: https://www.gnu.org/software/bash/manual/html_node/Bash-Startup-Files.html
+[bashloginarchive]: https://web.archive.org/web/20260227070926/https://www.gnu.org/software/bash/manual/html_node/Bash-Startup-Files.html
+[zshlogin]: https://zsh.sourceforge.io/Doc/Release/Files.html#Startup_002fShutdown-Files
 [ronn]: https://github.com/rtomayko/ronn
 [pod2man]: https://perldoc.perl.org/pod2man
 [its man pages]: https://github.com/ranger/ranger/tree/master/doc
