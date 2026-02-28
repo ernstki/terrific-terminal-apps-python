@@ -1,7 +1,7 @@
 # Truly Terrific Terminal Apps (in Python)
 
-[Slides](https://ernstki.github.io/terrific-terminal-apps-python), made with
-<https://github.com/gnab/remark>
+[Slides](https://ernstki.github.io/terrific-terminal-apps-python) made with
+<https://github.com/gnab/remark>.
 
 ## Command-line parsing sample code
 
@@ -14,7 +14,7 @@ slides, see [`sample-code`](sample-code):
 * [`pmfind-click.py`](sample-code/pmfind-click.py) uses [click][]
 
 Here's a [Click-based example that also creates a man page][setuptools]; see its
-[README](sample-code/pmfind-setuptools/README.md) for details.
+[README][streadme] for details.
 
 
 ## Author
@@ -37,4 +37,5 @@ For original code:
 [docopt]: https://github.com/docopt/docopt#readme
 [click]: https://github.com/pallets/click#readme
 [setuptools]: sample-code/pmfind-setuptools
+[streadme]: sample-code/pmfind-setuptools#readme
 [wtfpl]: https://www.wtfpl.net/about
