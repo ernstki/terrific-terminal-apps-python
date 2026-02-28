@@ -9,7 +9,9 @@ from urllib.parse import quote as urlquote
 NCBI_BASE_URL = 'https://www.ncbi.nlm.nih.gov'
 NCBI_SEARCH_PATH = 'pubmed/?term='
 NCBI_DEFAULT_SEARCH_TERM = 'notch'
-NCBI_SEARCH_RESULT_TITLE_A_XPATH = '//p[@class="title"]/a'
+# <a> class found by digging around with browser dev tools; can and has changed
+# after a redesign, and that's a downside of web scraping — use an API instead!
+NCBI_SEARCH_RESULT_TITLE_A_XPATH = '//a[@class="docsum-title"]'
 
 if __name__ == '__main__':
 
@@ -50,6 +52,7 @@ if __name__ == '__main__':
         # URL, a tab, then the text content of the <a> (the document title)
         for anchor in anchors:
             print(NCBI_BASE_URL + anchor.attrib['href'], end='')  # no EOL
-            # text_content() method strips all inner tags (like <b></b>)
-            print("\t", anchor.text_content())
+            # text_content() method strips all inner tags like <b></b>, but not
+            # leading/trailing whitespace, so do that too with str.strip()
+            print("\t", anchor.text_content().strip())
 
